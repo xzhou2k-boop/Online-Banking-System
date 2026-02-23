@@ -48,7 +48,7 @@ public class UserResource {
     }
 
     @RequestMapping("/user/{username}/disable")
-    public void diableUser(@PathVariable("username") String username) {
+    public void disableUser(@PathVariable("username") String username) {
         userService.disableUser(username);
     }
 }

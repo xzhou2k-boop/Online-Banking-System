@@ -7,7 +7,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -16,7 +20,9 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class RequestFilter implements Filter {
 
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) {
+    private static final Logger LOG = LoggerFactory.getLogger(RequestFilter.class);
+
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
 
@@ -27,13 +33,9 @@ public class RequestFilter implements Filter {
         response.setHeader("Access-Control-Allow-Credentials", "true");
 
         if (!(request.getMethod().equalsIgnoreCase("OPTIONS"))) {
-            try {
-                chain.doFilter(req, res);
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
+            chain.doFilter(req, res);
         } else {
-            System.out.println("Pre-flight");
+            LOG.debug("Pre-flight request received");
             response.setHeader("Access-Control-Allow-Methods", "POST,GET,DELETE");
             response.setHeader("Access-Control-Max-Age", "3600");
             response.setHeader("Access-Control-Allow-Headers", "authorization, content-type," +

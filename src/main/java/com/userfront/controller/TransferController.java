@@ -45,6 +45,10 @@ public class TransferController {
             @ModelAttribute("amount") String amount,
             Principal principal
     ) throws Exception {
+        double transferAmount = Double.parseDouble(amount);
+        if (transferAmount <= 0) {
+            throw new IllegalArgumentException("Transfer amount must be positive");
+        }
         User user = userService.findByUsername(principal.getName());
         PrimaryAccount primaryAccount = user.getPrimaryAccount();
         SavingsAccount savingsAccount = user.getSavingsAccount();
@@ -115,6 +119,10 @@ public class TransferController {
 
     @RequestMapping(value = "/toSomeoneElse",method = RequestMethod.POST)
     public String toSomeoneElsePost(@ModelAttribute("recipientName") String recipientName, @ModelAttribute("accountType") String accountType, @ModelAttribute("amount") String amount, Principal principal) {
+        double transferAmount = Double.parseDouble(amount);
+        if (transferAmount <= 0) {
+            throw new IllegalArgumentException("Transfer amount must be positive");
+        }
         User user = userService.findByUsername(principal.getName());
         Recipient recipient = transactionService.findRecipientByName(recipientName);
         transactionService.toSomeoneElseTransfer(recipient, accountType, amount, user.getPrimaryAccount(), user.getSavingsAccount());

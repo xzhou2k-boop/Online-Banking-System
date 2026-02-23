@@ -84,6 +84,9 @@ public class AccountServiceImpl implements AccountService {
 
         if (accountType.equalsIgnoreCase("Primary")) {
             PrimaryAccount primaryAccount = user.getPrimaryAccount();
+            if (primaryAccount.getAccountBalance().compareTo(new BigDecimal(amount)) < 0) {
+                throw new RuntimeException("Insufficient funds in Primary Account");
+            }
             primaryAccount.setAccountBalance(primaryAccount.getAccountBalance().subtract(new BigDecimal(amount)));
             primaryAccountDao.save(primaryAccount);
 
@@ -93,6 +96,9 @@ public class AccountServiceImpl implements AccountService {
             transactionService.savePrimaryWithdrawTransaction(primaryTransaction);
         } else if (accountType.equalsIgnoreCase("Savings")) {
             SavingsAccount savingsAccount = user.getSavingsAccount();
+            if (savingsAccount.getAccountBalance().compareTo(new BigDecimal(amount)) < 0) {
+                throw new RuntimeException("Insufficient funds in Savings Account");
+            }
             savingsAccount.setAccountBalance(savingsAccount.getAccountBalance().subtract(new BigDecimal(amount)));
             savingsAccountDao.save(savingsAccount);
 

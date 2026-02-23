@@ -76,9 +76,14 @@ public class TransactionServiceImpl implements TransactionService {
     }
     
     public void betweenAccountsTransfer(String transferFrom, String transferTo, String amount, PrimaryAccount primaryAccount, SavingsAccount savingsAccount) throws Exception {
+        BigDecimal transferAmount = new BigDecimal(amount);
+        
         if (transferFrom.equalsIgnoreCase("Primary") && transferTo.equalsIgnoreCase("Savings")) {
-            primaryAccount.setAccountBalance(primaryAccount.getAccountBalance().subtract(new BigDecimal(amount)));
-            savingsAccount.setAccountBalance(savingsAccount.getAccountBalance().add(new BigDecimal(amount)));
+            if (primaryAccount.getAccountBalance().compareTo(transferAmount) < 0) {
+                throw new Exception("Insufficient funds in Primary Account");
+            }
+            primaryAccount.setAccountBalance(primaryAccount.getAccountBalance().subtract(transferAmount));
+            savingsAccount.setAccountBalance(savingsAccount.getAccountBalance().add(transferAmount));
             primaryAccountDao.save(primaryAccount);
             savingsAccountDao.save(savingsAccount);
 
@@ -87,8 +92,11 @@ public class TransactionServiceImpl implements TransactionService {
             PrimaryTransaction primaryTransaction = new PrimaryTransaction(date, "Between account transfer from "+transferFrom+" to "+transferTo, "Account", "Finished", Double.parseDouble(amount), primaryAccount.getAccountBalance(), primaryAccount);
             primaryTransactionDao.save(primaryTransaction);
         } else if (transferFrom.equalsIgnoreCase("Savings") && transferTo.equalsIgnoreCase("Primary")) {
-            primaryAccount.setAccountBalance(primaryAccount.getAccountBalance().add(new BigDecimal(amount)));
-            savingsAccount.setAccountBalance(savingsAccount.getAccountBalance().subtract(new BigDecimal(amount)));
+            if (savingsAccount.getAccountBalance().compareTo(transferAmount) < 0) {
+                throw new Exception("Insufficient funds in Savings Account");
+            }
+            primaryAccount.setAccountBalance(primaryAccount.getAccountBalance().add(transferAmount));
+            savingsAccount.setAccountBalance(savingsAccount.getAccountBalance().subtract(transferAmount));
             primaryAccountDao.save(primaryAccount);
             savingsAccountDao.save(savingsAccount);
 
@@ -123,8 +131,13 @@ public class TransactionServiceImpl implements TransactionService {
     }
     
     public void toSomeoneElseTransfer(Recipient recipient, String accountType, String amount, PrimaryAccount primaryAccount, SavingsAccount savingsAccount) {
+        BigDecimal transferAmount = new BigDecimal(amount);
+        
         if (accountType.equalsIgnoreCase("Primary")) {
-            primaryAccount.setAccountBalance(primaryAccount.getAccountBalance().subtract(new BigDecimal(amount)));
+            if (primaryAccount.getAccountBalance().compareTo(transferAmount) < 0) {
+                throw new RuntimeException("Insufficient funds in Primary Account");
+            }
+            primaryAccount.setAccountBalance(primaryAccount.getAccountBalance().subtract(transferAmount));
             primaryAccountDao.save(primaryAccount);
 
             Date date = new Date();
@@ -132,7 +145,10 @@ public class TransactionServiceImpl implements TransactionService {
             PrimaryTransaction primaryTransaction = new PrimaryTransaction(date, "Transfer to recipient "+recipient.getName(), "Transfer", "Finished", Double.parseDouble(amount), primaryAccount.getAccountBalance(), primaryAccount);
             primaryTransactionDao.save(primaryTransaction);
         } else if (accountType.equalsIgnoreCase("Savings")) {
-            savingsAccount.setAccountBalance(savingsAccount.getAccountBalance().subtract(new BigDecimal(amount)));
+            if (savingsAccount.getAccountBalance().compareTo(transferAmount) < 0) {
+                throw new RuntimeException("Insufficient funds in Savings Account");
+            }
+            savingsAccount.setAccountBalance(savingsAccount.getAccountBalance().subtract(transferAmount));
             savingsAccountDao.save(savingsAccount);
 
             Date date = new Date();
