@@ -47,7 +47,7 @@ public class TransferController {
     ) throws Exception {
         double transferAmount = Double.parseDouble(amount);
         if (transferAmount <= 0) {
-            throw new IllegalArgumentException("Transfer amount must be positive");
+            throw new IllegalArgumentException("转账金额必须大于0");
         }
         User user = userService.findByUsername(principal.getName());
         PrimaryAccount primaryAccount = user.getPrimaryAccount();
@@ -121,7 +121,7 @@ public class TransferController {
     public String toSomeoneElsePost(@ModelAttribute("recipientName") String recipientName, @ModelAttribute("accountType") String accountType, @ModelAttribute("amount") String amount, Principal principal) {
         double transferAmount = Double.parseDouble(amount);
         if (transferAmount <= 0) {
-            throw new IllegalArgumentException("Transfer amount must be positive");
+            throw new IllegalArgumentException("转账金额必须大于0");
         }
         User user = userService.findByUsername(principal.getName());
         Recipient recipient = transactionService.findRecipientByName(recipientName);

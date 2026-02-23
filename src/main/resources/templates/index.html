@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:replace="common/header :: common-header"/>
 <body>
 <!-- Login Section -->
@@ -8,35 +8,35 @@
         <div class="row ">
             <div class="main-center ">
                 <div class="bg-danger" th:if="${param.error}">
-                    Invalid username and secret.
+                    用户名或密码错误
                 </div>
                 <div class="bg-danger" th:if="${param.logout}">
-                    You have been logged out.
+                    您已成功退出登录
                 </div>
                 <form class="form-signin" th:action="@{/index}" method="post">
-                    <h2 class="form-signin-heading">Please sign in</h2>
+                    <h2 class="form-signin-heading">请登录</h2>
                     <div class="form-group">
-                        <label for="username" class="sr-only">Username</label>
-                        <input type="text" roleId="username" class="form-control" placeholder="Username" name="username"
+                        <label for="username" class="sr-only">用户名</label>
+                        <input type="text" roleId="username" class="form-control" placeholder="用户名" name="username"
                                id="username"
                                required="required" autofocus="autofocus"/>
                     </div>
                     <div class="form-group">
-                        <label for="password" class="sr-only">Password</label>
-                        <input type="password" roleId="inputPassword" class="form-control" placeholder="Password"
+                        <label for="password" class="sr-only">密码</label>
+                        <input type="password" roleId="inputPassword" class="form-control" placeholder="密码"
                                id="password"
                                name="password" required="required"/>
                     </div>
                     <div class="form-group">
-                        <input type="checkbox" name="remember-me" id="remember-me"/> &nbsp; Remember me
+                        <input type="checkbox" name="remember-me" id="remember-me"/> &nbsp; 记住我
                     </div>
-                    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
                 </form>
                 
                 <hr />
                 
                 <div class="form-group ">
-                    <a type="submit" class="btn btn-info btn-lg btn-block login-button" th:href="@{/signup}">Sign up!</a>
+                    <a type="submit" class="btn btn-info btn-lg btn-block login-button" th:href="@{/signup}">注册账号</a>
                 </div>
             </div>
         </div>

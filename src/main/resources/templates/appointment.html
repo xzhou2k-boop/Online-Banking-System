@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:replace="common/header :: common-header"/>
 <body roleId="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
 <head th:replace="common/header :: navbar"/>
 <div class="container main">
     <div class="row">
         <div class="col-md-6">
-            <h3>Schedule An Appointment</h3>
+            <h3>预约办理</h3>
             <form th:action="@{/appointment/create}" method="post" id="appointmentForm">
                 <input type="hidden" name="id" th:value="${appointment.id}"/>
 
                 <div class="form-group">
-                    <label for="dateString">Pick a Date and Time:</label>
+                    <label for="dateString">选择日期和时间：</label>
                     <div class="input-append date form_datetime input-group" data-date="2016-10-21T15:25:00Z">
                         <input class="form-control" type="text" value="" readonly="readonly"
                                th:value="${dateString}" name="dateString"
@@ -22,24 +22,24 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="location">Pick a location:</label>
+                    <label for="location">选择办理地点：</label>
                     <select class="form-control" th:value="${appointment.location}" name="location" id="location"
                             >
-                        <option disabled="disabled" selected="selected" > -- select the location --</option>
-                        <option>Dhaka</option>
-                        <option>Gazipur</option>
-                        <option>Barisal</option>
-                        <option>Chittagong</option>
-                        <option>Mymensingh</option>
-                        <option>Rajshahi</option>
-                        <option>Rangpur</option>
-                        <option>Sylhet</option>
+                        <option disabled="disabled" selected="selected" > -- 请选择地点 --</option>
+                        <option>北京分行</option>
+                        <option>上海分行</option>
+                        <option>广州分行</option>
+                        <option>深圳分行</option>
+                        <option>成都分行</option>
+                        <option>杭州分行</option>
+                        <option>南京分行</option>
+                        <option>武汉分行</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Notes:</label>
-                    <textarea th:value="${appointment.description}" class="form-control" name="description" id="description" placeholder="Description" ></textarea>
+                    <label for="description">备注：</label>
+                    <textarea th:value="${appointment.description}" class="form-control" name="description" id="description" placeholder="备注说明" ></textarea>
                 </div>
 
 
@@ -47,7 +47,7 @@
                        name="${_csrf.parameterName}"
                        value="${_csrf.token}"/>
 
-                <a class="btn btn-primary" id="submitAppointment">Submit Scheduling</a>
+                <a class="btn btn-primary" id="submitAppointment">提交预约</a>
             </form>
 
             <div class="col-md-6">

@@ -69,7 +69,7 @@ public class AccountController {
     public String depositPOST(@ModelAttribute("amount") String amount, @ModelAttribute("accountType") String accountType, Principal principal) {
         double depositAmount = Double.parseDouble(amount);
         if (depositAmount <= 0) {
-            throw new IllegalArgumentException("Deposit amount must be positive");
+            throw new IllegalArgumentException("存款金额必须大于0");
         }
         accountService.deposit(accountType, depositAmount, principal);
 
@@ -88,7 +88,7 @@ public class AccountController {
     public String withdrawPOST(@ModelAttribute("amount") String amount, @ModelAttribute("accountType") String accountType, Principal principal) {
         double withdrawAmount = Double.parseDouble(amount);
         if (withdrawAmount <= 0) {
-            throw new IllegalArgumentException("Withdrawal amount must be positive");
+            throw new IllegalArgumentException("取款金额必须大于0");
         }
         accountService.withdraw(accountType, withdrawAmount, principal);
 

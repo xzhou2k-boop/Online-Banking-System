@@ -15,21 +15,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public String handleRuntimeException(RuntimeException ex, RedirectAttributes redirectAttributes) {
         LOG.error("Runtime exception occurred: {}", ex.getMessage());
-        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        redirectAttributes.addFlashAttribute("errorMessage", "操作失败：" + ex.getMessage());
         return "redirect:/userFront";
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgumentException(IllegalArgumentException ex, RedirectAttributes redirectAttributes) {
         LOG.error("Invalid argument: {}", ex.getMessage());
-        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        redirectAttributes.addFlashAttribute("errorMessage", "参数错误：" + ex.getMessage());
         return "redirect:/userFront";
     }
 
     @ExceptionHandler(Exception.class)
     public String handleException(Exception ex, RedirectAttributes redirectAttributes) {
         LOG.error("Exception occurred: {}", ex.getMessage());
-        redirectAttributes.addFlashAttribute("errorMessage", "An error occurred. Please try again.");
+        redirectAttributes.addFlashAttribute("errorMessage", "发生错误，请重试");
         return "redirect:/userFront";
     }
 }

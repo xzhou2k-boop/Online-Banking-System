@@ -37,6 +37,62 @@
 | 管理员 | `admin` | `admin` |
 | 普通用户 | 自行注册 | - |
 
+## 五、界面汉化 (2026-02-23 更新)
+
+### 汉化的模板文件
+| 文件 | 汉化内容 |
+|------|----------|
+| `header.html` | 导航栏菜单（首页、账户管理、转账汇款、预约服务、我的） |
+| `index.html` | 登录页面（标题、表单标签、按钮） |
+| `signup.html` | 注册页面（标题、表单标签、按钮、提示信息） |
+| `userFront.html` | 主页（账户余额、存取款入口） |
+| `deposit.html` | 存款页面（标签、按钮） |
+| `withdraw.html` | 取款页面（标签、按钮） |
+| `primaryAccount.html` | 主账户页面（余额标题、交易记录表头） |
+| `savingsAccount.html` | 储蓄账户页面（余额标题、交易记录表头） |
+| `betweenAccounts.html` | 账户间转账页面（标签、按钮） |
+| `toSomeoneElse.html` | 向他人转账页面（标签、按钮） |
+| `recipient.html` | 收款人管理页面（表单标签、列表标题） |
+| `appointment.html` | 预约页面（标签、地点选项改为国内城市） |
+| `profile.html` | 个人资料页面（标签、按钮） |
+
+### 汉化的Java代码
+| 文件 | 汉化内容 |
+|------|----------|
+| `AccountServiceImpl.java` | 交易描述、错误提示信息 |
+| `TransactionServiceImpl.java` | 交易描述、错误提示信息 |
+| `AccountController.java` | 验证错误提示信息 |
+| `TransferController.java` | 验证错误提示信息 |
+| `GlobalExceptionHandler.java` | 异常提示信息 |
+
+### 其他修改
+- 所有HTML文件的`lang`属性从`en`改为`zh-CN`
+- 预约地点从孟加拉城市改为国内城市（北京、上海、广州等）
+
+## 六、文件变更统计
+
+- **修改文件**: 25个
+- **新增文件**: 2个
+- **编译状态**: BUILD SUCCESS
+| `RequestFilter.java` | 异常处理不规范(仅printStackTrace) | 使用SLF4J日志+正确声明异常 |
+| `AccountController.java` | 存取款无金额有效性验证 | 添加金额必须为正数校验 |
+| `TransferController.java` | 转账无金额有效性验证 | 添加金额必须为正数校验 |
+
+## 三、新增功能
+
+| 文件 | 功能说明 |
+|------|----------|
+| `InitialDataLoader.java` | 系统启动时初始化：创建`ROLE_USER`、`ROLE_ADMIN`角色和管理员账号 |
+| `GlobalExceptionHandler.java` | 全局异常处理器，统一捕获并提示运行时异常 |
+| `userFront.html` | 添加错误消息显示区域 |
+
+## 四、默认账号信息
+
+| 角色 | 用户名 | 密码 |
+|------|--------|------|
+| 管理员 | `admin` | `admin` |
+| 普通用户 | 自行注册 | - |
+
 ## 五、文件变更统计
 
 - **修改文件**: 10个

@@ -1,79 +1,79 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:replace="common/header :: common-header"/>
 <body roleId="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
 <head th:replace="common/header :: navbar"/>
 <div class="container">
     <div class="row main">
         <div class="col-md-6">
-            <h2 class="title">My Profile</h2>
+            <h2 class="title">个人资料</h2>
             <hr/>
             <form method="post" th:action="@{/user/profile}">
                 <input type="hidden" name="id" th:value="${user.userId}"/>
 
                 <div class="form-group">
-                    <label for="firstName">First Name</label>
+                    <label for="firstName">姓</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
                             <input type="text" class="form-control" th:value="${user.firstName}" id="firstName"
-                                   name="firstName" roleId="firstname" placeholder="Enter your first name"
+                                   name="firstName" roleId="firstname" placeholder="请输入您的姓"
                                    required="required"/>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="lastName" class="cols-sm-2 control-label">Last Name</label>
+                    <label for="lastName" class="cols-sm-2 control-label">名</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
                             <input type="text" class="form-control" th:value="${user.lastName}" id="lastName"
-                                   name="lastName" roleId="lastName" placeholder="Enter your last name"
+                                   name="lastName" roleId="lastName" placeholder="请输入您的名"
                                    required="required"/>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="phone" class="cols-sm-2 control-label">Phone</label>
+                    <label for="phone" class="cols-sm-2 control-label">电话</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-phone fa" aria-hidden="true"></i></span>
                             <input type="text" class="form-control" th:value="${user.phone}" id="phone" name="phone"
-                                   roleId="phone" placeholder="xxx-xxx-xxxx" required="required"/>
+                                   roleId="phone" placeholder="请输入电话号码" required="required"/>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="email" class="cols-sm-2 control-label">Your Email</label><span
-                        class="bg-danger pull-right" th:if="${emailExists}">Email already exists</span>
+                    <label for="email" class="cols-sm-2 control-label">邮箱</label><span
+                        class="bg-danger pull-right" th:if="${emailExists}">邮箱已存在</span>
                     <div class="cols-sm-10">
                         <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-envelope fa"
                                                                    aria-hidden="true"></i></span>
                             <input type="text" class="form-control" th:value="${user.email}" id="email" name="email"
-                                   roleId="email" placeholder="Enter your Email" required="required"/>
+                                   roleId="email" placeholder="请输入邮箱地址" required="required"/>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="username" class="cols-sm-2 control-label">Username</label><span
-                        class="bg-danger pull-right" th:if="${usernameExists}">Username already exists</span>
+                    <label for="username" class="cols-sm-2 control-label">用户名</label><span
+                        class="bg-danger pull-right" th:if="${usernameExists}">用户名已存在</span>
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
                             <input type="text" class="form-control" th:value="${user.username}" id="username"
-                                   name="username" roleId="username" placeholder="Enter your Username"
+                                   name="username" roleId="username" placeholder="请输入用户名"
                                    required="required"/>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group ">
-                    <button type="submit" class="btn btn-primary btn-block ">Change Settings
+                    <button type="submit" class="btn btn-primary btn-block ">保存修改
                     </button>
                 </div>
 
@@ -82,13 +82,13 @@
         <div class="col-md-6">
             <div class="panel-heading">
                 <div class="panel-title text-center">
-                    <h1 class="title">Your Account Information</h1>
+                    <h1 class="title">账户信息</h1>
                     <hr/>
                 </div>
                 <table class="responstable">
                     <tr>
-                        <th>Primary Account Number</th>
-                        <th>Savings Account Number</th>
+                        <th>主账户账号</th>
+                        <th>储蓄账户账号</th>
                     </tr>
 
                     <tr>
