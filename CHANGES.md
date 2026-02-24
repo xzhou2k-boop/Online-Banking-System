@@ -226,3 +226,64 @@ public class InitialDataLoader implements CommandLineRunner {
     }
 }
 ```
+
+---
+
+## 七、向他人转账功能修复 (2026-02-24)
+
+### 问题描述
+向他人转账时，转出方账户余额减少，但收款人账户余额没有增加。
+
+### 修复方案
+修改 `TransactionServiceImpl.toSomeoneElseTransfer()` 方法：
+1. 根据收款人的账户号码查找对应的用户
+2. 将转账金额增加到收款人的对应账户
+3. 同时记录收款人的交易流水
+
+### 修改文件
+- `TransactionServiceImpl.java`
+
+### 代码示例
+```java
+// 通过收款人账户号码查找用户
+User recipientUser = userService.findByUsername(recipient.getAccountNumber());
+
+if (recipientUser == null) {
+    throw new RuntimeException("收款人账户不存在，无法转账");
+}
+
+// 增加收款人账户余额
+if (accountType.equalsIgnoreCase("Primary")) {
+    recipientPrimaryAccount.setAccountBalance(
+        recipientPrimaryAccount.getAccountBalance().add(transferAmount));
+    primaryAccountDao.save(recipientPrimaryAccount);
+    
+    // 记录收款人交易
+    PrimaryTransaction recipientTransaction = new PrimaryTransaction(
+        date, "收到来自" + recipient.getName() + "的转账", 
+        "Transfer", "Finished", amount, 
+        recipientPrimaryAccount.getAccountBalance(), recipientPrimaryAccount);
+    primaryTransactionDao.save(recipientTransaction);
+}
+```
+
+---
+
+## 八、新增测试数据辅助工具 (2026-02-24)
+
+### 新增文件
+| 文件 | 功能说明 |
+|------|----------|
+| `TestDataGenerator.java` | 测试数据生成器，可生成3个测试用户 |
+| `ToolResource.java` | REST API端点，用于触发测试数据生成 |
+
+### 测试用户
+| 用户名 | 密码 | 姓名 | 邮箱 |
+|--------|------|------|------|
+| user1 | password1 | 张三 | user1@bank.com |
+| user2 | password2 | 李四 | user2@bank.com |
+| user3 | password3 | 王五 | user3@bank.com |
+
+### 使用方式
+1. **API调用**：GET /api/tool/generate-test-users (需要管理员权限)
+2. **命令行**：./mvnw spring-boot:run -Dspring-boot.run.arguments=init-test-data
