@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.userfront.domain.User;
 import com.userfront.service.UserService;
@@ -41,6 +42,32 @@ public class UserController {
 
         userService.saveUser(user);
 
+        return "profile";
+    }
+
+    @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
+    public String updatePassword(Principal principal, 
+                                  @RequestParam("newPassword") String newPassword,
+                                  @RequestParam("confirmPassword") String confirmPassword,
+                                  Model model) {
+        User user = userService.findByUsername(principal.getName());
+        
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("passwordError", "两次输入的密码不一致");
+            model.addAttribute("user", user);
+            return "profile";
+        }
+        
+        if (newPassword == null || newPassword.length() < 6) {
+            model.addAttribute("passwordError", "密码长度不能少于6位");
+            model.addAttribute("user", user);
+            return "profile";
+        }
+        
+        userService.updatePassword(principal.getName(), newPassword);
+        model.addAttribute("passwordSuccess", "密码修改成功");
+        model.addAttribute("user", userService.findByUsername(principal.getName()));
+        
         return "profile";
     }
 

@@ -99,6 +99,51 @@
             </div>
         </div>
     </div>
+
+    <div class="row main">
+        <div class="col-md-6 col-md-offset-3">
+            <h2 class="title">修改密码</h2>
+            <hr/>
+            
+            <div class="alert alert-success" th:if="${passwordSuccess}">
+                <span th:text="${passwordSuccess}"></span>
+            </div>
+            <div class="alert alert-danger" th:if="${passwordError}">
+                <span th:text="${passwordError}"></span>
+            </div>
+            
+            <form method="post" th:action="@{/user/updatePassword}">
+                <div class="form-group">
+                    <label for="newPassword">新密码</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-lock fa" aria-hidden="true"></i></span>
+                            <input type="password" class="form-control" id="newPassword"
+                                   name="newPassword" placeholder="请输入新密码（至少6位）"
+                                   required="required"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">确认新密码</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-lock fa" aria-hidden="true"></i></span>
+                            <input type="password" class="form-control" id="confirmPassword"
+                                   name="confirmPassword" placeholder="请再次输入新密码"
+                                   required="required"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group ">
+                    <button type="submit" class="btn btn-warning btn-block ">修改密码
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 

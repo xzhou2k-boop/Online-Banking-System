@@ -117,4 +117,10 @@ public class UserServiceImpl implements UserService{
         userDao.save(user);
         System.out.println(username + " is disabled.");
     }
+
+    public void updatePassword(String username, String newPassword) {
+        User user = findByUsername(username);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userDao.save(user);
+    }
 }
