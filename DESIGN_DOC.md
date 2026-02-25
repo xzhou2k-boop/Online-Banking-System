@@ -5,7 +5,7 @@
 | 项目 | 内容 |
 |------|------|
 | 项目名称 | 在线银行系统 (Online Banking System) |
-| 版本 | v1.1 |
+| 版本 | v1.2 |
 | 创建日期 | 2026-02-23 |
 | 更新日期 | 2026-02-25 |
 | 技术栈 | Spring Boot 2.0 + Spring Security + Thymeleaf + JPA + H2 |
@@ -322,6 +322,7 @@ public interface UserService {
     List<User> findUserList();
     void enableUser(String username);
     void disableUser(String username);
+    void updatePassword(String username, String newPassword);
 }
 ```
 
@@ -338,6 +339,29 @@ public interface UserService {
 **前端实现**：
 - 在用户列表中，管理员账户的禁用按钮显示为禁用状态或显示保护提示
 - 鼠标悬停时显示提示信息："管理员账户受保护，无法禁用"
+
+#### 3.2.5 密码修改功能
+
+用户可以在个人资料页面修改登录密码：
+
+| 功能 | 说明 |
+|------|------|
+| 密码修改 | 用户修改自己的登录密码 |
+
+**实现说明**：
+- 用户需要输入新密码和确认密码
+- 密码长度至少6位
+- 两次密码输入必须一致
+- 新密码使用BCrypt加密存储
+
+**API设计**：
+```
+POST /user/updatePassword
+参数：
+- newPassword: 新密码
+- confirmPassword: 确认密码
+返回：profile页面
+```
 
 ### 3.3 账户模块
 
@@ -674,6 +698,7 @@ public interface AppointmentService {
 |------|------|------|------|
 | GET | /user/profile | USER | 个人资料页面 |
 | POST | /user/profile | USER | 更新个人资料 |
+| POST | /user/updatePassword | USER | 修改登录密码 |
 
 #### 5.2.3 账户控制器 (AccountController)
 
@@ -874,7 +899,7 @@ Response: void (200 OK)
 | 日期 | 版本 | 修改内容 | 修改人 |
 |------|------|----------|--------|
 | 2026-02-23 | v1.0 | 初始版本 | - |
-| 2026-02-25 | v1.1 | 添加交易金额正负号显示、按中国习惯设置颜色、管理员账户保护 | - |
+| 2026-02-25 | v1.1 | 添加交易金额正负号显示、按中国习惯设置颜色、管理员账户保护、密码修改功能 | - |
 
 ---
 

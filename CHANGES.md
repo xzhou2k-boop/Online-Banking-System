@@ -150,7 +150,26 @@
 |------|----------|
 | `TestDataGenerator.java` | 新增 addInitialBalance 和 addRecipients 方法 |
 
-### 10. 编译验证
+### 11. 密码修改功能
+
+#### 问题描述
+用户需要能够修改自己的登录密码。
+
+#### 解决方案
+- 在个人资料页面添加密码修改表单
+- 验证密码长度（至少6位）
+- 验证两次密码输入一致
+- 新密码使用BCrypt加密存储
+
+#### 修改文件
+| 文件 | 修改内容 |
+|------|----------|
+| `UserService.java` | 新增 updatePassword 接口方法 |
+| `UserServiceImpl.java` | 实现密码更新方法，使用BCrypt加密 |
+| `UserController.java` | 新增 /user/updatePassword 处理密码修改 |
+| `profile.html` | 新增密码修改表单 |
+
+### 12. 编译验证
 
 - 编译状态：BUILD SUCCESS
 
