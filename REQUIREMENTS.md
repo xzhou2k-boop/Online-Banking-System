@@ -773,7 +773,12 @@ GET /api/appointment/{id}/confirm
 | 向他人转账 | /transfer/toSomeoneElse | USER | 向收款人转账 |
 | 收款人管理 | /transfer/recipient | USER | 收款人列表 |
 | 预约页 | /appointment/create | USER | 创建预约 |
+| 预约列表 | /appointment/list | USER | 查看预约列表 |
 | 个人资料 | /user/profile | USER | 个人信息 |
+| 密码修改 | /user/updatePassword | USER | 修改登录密码 |
+| 用户管理 | /admin/users | ADMIN | 用户列表 |
+| 预约管理 | /admin/appointments | ADMIN | 预约列表 |
+| 交易监控 | /admin/transactions | ADMIN | 交易列表 |
 
 #### 3.4.2 REST API 接口
 
@@ -782,11 +787,10 @@ GET /api/appointment/{id}/confirm
 | GET | /api/user/all | Basic Auth (ADMIN) | 获取所有用户 |
 | GET | /api/user/{username}/enable | Basic Auth (ADMIN) | 启用用户 |
 | GET | /api/user/{username}/disable | Basic Auth (ADMIN) | 禁用用户 |
-| GET | /api/user/primary/transaction | Basic Auth (ADMIN) | 获取主账户交易 |
-| GET | /api/user/savings/transaction | Basic Auth (ADMIN) | 获取储蓄账户交易 |
+| GET | /api/user/primary/transaction | Basic Auth (ADMIN) | 获取指定用户主账户交易 |
+| GET | /api/user/savings/transaction | Basic Auth (ADMIN) | 获取指定用户储蓄账户交易 |
 | GET | /api/appointment/all | Basic Auth (ADMIN) | 获取所有预约 |
 | GET | /api/appointment/{id}/confirm | Basic Auth (ADMIN) | 确认预约 |
-| GET | /api/tool/generate-test-users | Basic Auth (ADMIN) | 生成测试用户 |
 
 ### 3.5 非功能需求
 
