@@ -50,6 +50,13 @@ public class AppointmentController {
 
         return "redirect:/userFront";
     }
+    
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public String appointmentList(Model model, Principal principal) {
+        String username = principal.getName();
+        model.addAttribute("appointmentList", appointmentService.findByUsername(username));
+        return "appointmentList";
+    }
 
 
 }

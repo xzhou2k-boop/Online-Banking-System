@@ -8,6 +8,8 @@ public interface AppointmentService {
 	Appointment createAppointment(Appointment appointment);
 
     List<Appointment> findAll();
+    
+    List<Appointment> findByUsername(String username);
 
     Appointment findAppointment(Long id);
 

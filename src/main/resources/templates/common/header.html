@@ -74,6 +74,15 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">预约服务 <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a th:href="@{/appointment/create}">预约办理</a></li>
+                        <li><a th:href="@{/appointment/list}">我的预约</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown" th:if="${#httpServletRequest.isUserInRole('ADMIN')}">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">系统管理 <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a th:href="@{/admin/users}">用户管理</a></li>
+                        <li><a th:href="@{/admin/appointments}">预约管理</a></li>
+                        <li><a th:href="@{/admin/transactions}">交易监控</a></li>
                     </ul>
                 </li>
             </ul>

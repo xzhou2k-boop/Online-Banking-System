@@ -46,21 +46,21 @@
 $(document).ready(function() {
     var confirm = function() {
         bootbox.confirm({
-            title: "Appointment Confirmation",
-            message: "Do you really want to schedule this appointment?",
+            title: "确认预约",
+            message: "确定要创建此预约吗?",
             buttons: {
                 cancel: {
-                    label: '<i class="fa fa-times"></i> Cancel'
+                    label: '<i class="fa fa-times"></i> 取消'
                 },
                 confirm: {
-                    label: '<i class="fa fa-check"></i> Confirm'
+                    label: '<i class="fa fa-check"></i> 确认'
                 }
             },
             callback: function (result) {
                 if (result == true) {
                     $('#appointmentForm').submit();
                 } else {
-                    console.log("Scheduling cancelled.");
+                    console.log("预约已取消.");
                 }
             }
         });
@@ -77,15 +77,46 @@ $(document).ready(function() {
         format: "yyyy-mm-dd hh:mm",
         autoclose: true,
         todayBtn: true,
-        startDate: "2013-02-14 10:00",
-        minuteStep: 10
+        startDate: "2026-01-01 10:00",
+        minuteStep: 10,
+        language: 'zh-CN'
     });
 
     $('#submitAppointment').click(function () {
         confirm();
     });
 
+    if ($.fn.DataTable) {
+        $.extend(true, $.fn.dataTable.defaults, {
+            language: {
+                "sProcessing": "处理中...",
+                "sLengthMenu": "显示 _MENU_ 条记录",
+                "sZeroRecords": "没有匹配记录",
+                "sInfo": "显示第 _START_ 至 _END_ 条记录，共 _TOTAL_ 条",
+                "sInfoEmpty": "显示第 0 至 0 条记录，共 0 条",
+                "sInfoFiltered": "(由 _MAX_ 条记录过滤)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中无数据",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上页",
+                    "sNext": "下页",
+                    "sLast": "末页"
+                },
+                "oAria": {
+                    "sSortAscending": ": 以升序排列",
+                    "sSortDescending": ": 以降序排列"
+                }
+            }
+        });
+    }
+
 });
+
 
 
 

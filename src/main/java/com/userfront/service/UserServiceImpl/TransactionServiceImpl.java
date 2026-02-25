@@ -91,7 +91,7 @@ public class TransactionServiceImpl implements TransactionService {
             Date date = new Date();
 
             PrimaryTransaction primaryTransaction = new PrimaryTransaction(date,
-                    "账户间转账：转账给" + transferTo, "Transfer", "Finished", Double.parseDouble(amount),
+                    "账户间转账：转账给" + transferTo, "Transfer", "Finished", -Double.parseDouble(amount),
                     primaryAccount.getAccountBalance(), primaryAccount);
             primaryTransactionDao.save(primaryTransaction);
             SavingsTransaction savingsTransaction = new SavingsTransaction(date,
@@ -110,7 +110,7 @@ public class TransactionServiceImpl implements TransactionService {
             Date date = new Date();
 
             SavingsTransaction savingsTransaction = new SavingsTransaction(date,
-                    "账户间转账：转账给" + transferTo, "Transfer", "Finished", Double.parseDouble(amount),
+                    "账户间转账：转账给" + transferTo, "Transfer", "Finished", -Double.parseDouble(amount),
                     savingsAccount.getAccountBalance(), savingsAccount);
             savingsTransactionDao.save(savingsTransaction);
             PrimaryTransaction primaryTransaction = new PrimaryTransaction(date,
@@ -123,13 +123,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public List<Recipient> findRecipientList(Principal principal) {
-        String username = principal.getName();
-        List<Recipient> recipientList = recipientDao.findAll().stream() // convert list to stream
-                .filter(recipient -> username.equals(recipient.getUser().getUsername())) // filters the line, equals to
-                                                                                         // username
-                .collect(Collectors.toList());
-
-        return recipientList;
+        User user = userService.findByUsername(principal.getName());
+        return recipientDao.findByUser(user);
     }
 
     public Recipient saveRecipient(Recipient recipient) {
@@ -137,17 +132,27 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public Recipient findRecipientByName(String recipientName) {
-        return recipientDao.findByName(recipientName);
+        return null;
     }
 
     public void deleteRecipientByName(String recipientName) {
-        recipientDao.deleteByName(recipientName);
+    }
+
+    public Recipient findRecipientByName(String recipientName, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        return recipientDao.findByNameAndUser(recipientName, user);
+    }
+
+    public void deleteRecipientByName(String recipientName, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        recipientDao.deleteByNameAndUser(recipientName, user);
     }
 
     public void toSomeoneElseTransfer(Recipient recipient, String accountType, String amount,
             PrimaryAccount primaryAccount, SavingsAccount savingsAccount) {
         BigDecimal transferAmount = new BigDecimal(amount);
 
+        // 通过收款人账户信息查找对应的用户
         User recipientUser = userService.findByUsername(recipient.getAccountNumber());
 
         if (recipientUser == null) {
@@ -167,7 +172,7 @@ public class TransactionServiceImpl implements TransactionService {
             Date date = new Date();
 
             PrimaryTransaction primaryTransaction = new PrimaryTransaction(date, "转账给收款人：" + recipient.getName(),
-                    "Transfer", "Finished", Double.parseDouble(amount), primaryAccount.getAccountBalance(),
+                    "Transfer", "Finished", -Double.parseDouble(amount), primaryAccount.getAccountBalance(),
                     primaryAccount);
             primaryTransactionDao.save(primaryTransaction);
 
@@ -188,7 +193,7 @@ public class TransactionServiceImpl implements TransactionService {
             Date date = new Date();
 
             SavingsTransaction savingsTransaction = new SavingsTransaction(date, "转账给收款人：" + recipient.getName(),
-                    "Transfer", "Finished", Double.parseDouble(amount), savingsAccount.getAccountBalance(),
+                    "Transfer", "Finished", -Double.parseDouble(amount), savingsAccount.getAccountBalance(),
                     savingsAccount);
             savingsTransactionDao.save(savingsTransaction);
 
@@ -200,5 +205,13 @@ public class TransactionServiceImpl implements TransactionService {
                     recipientSavingsAccount);
             savingsTransactionDao.save(recipientTransaction);
         }
+    }
+    
+    public List<PrimaryTransaction> findAllPrimaryTransactions() {
+        return (List<PrimaryTransaction>) primaryTransactionDao.findAll();
+    }
+    
+    public List<SavingsTransaction> findAllSavingsTransactions() {
+        return (List<SavingsTransaction>) savingsTransactionDao.findAll();
     }
 }

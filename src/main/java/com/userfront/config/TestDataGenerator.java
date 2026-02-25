@@ -1,5 +1,6 @@
 package com.userfront.config;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,8 +10,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.userfront.dao.PrimaryAccountDao;
+import com.userfront.dao.RecipientDao;
 import com.userfront.dao.RoleDao;
+import com.userfront.dao.SavingsAccountDao;
 import com.userfront.dao.UserDao;
+import com.userfront.domain.PrimaryAccount;
+import com.userfront.domain.Recipient;
+import com.userfront.domain.SavingsAccount;
 import com.userfront.domain.User;
 import com.userfront.domain.security.Role;
 import com.userfront.domain.security.UserRole;
@@ -21,15 +28,25 @@ public class TestDataGenerator implements CommandLineRunner {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestDataGenerator.class);
 
+    private static final BigDecimal INITIAL_BALANCE = new BigDecimal("5000");
+
     private final RoleDao roleDao;
     private final UserDao userDao;
+    private final PrimaryAccountDao primaryAccountDao;
+    private final SavingsAccountDao savingsAccountDao;
     private final AccountService accountService;
+    private final RecipientDao recipientDao;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public TestDataGenerator(RoleDao roleDao, UserDao userDao, AccountService accountService, BCryptPasswordEncoder passwordEncoder) {
+    public TestDataGenerator(RoleDao roleDao, UserDao userDao, PrimaryAccountDao primaryAccountDao,
+                            SavingsAccountDao savingsAccountDao, AccountService accountService, 
+                            RecipientDao recipientDao, BCryptPasswordEncoder passwordEncoder) {
         this.roleDao = roleDao;
         this.userDao = userDao;
+        this.primaryAccountDao = primaryAccountDao;
+        this.savingsAccountDao = savingsAccountDao;
         this.accountService = accountService;
+        this.recipientDao = recipientDao;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -55,6 +72,90 @@ public class TestDataGenerator implements CommandLineRunner {
         createTestUser("user3", "password3", "王", "五", "user3@bank.com", "13800138003", userRole);
         
         LOG.info("成功创建3个测试用户");
+        
+        addInitialBalance();
+        LOG.info("成功为每个账户存入5000元");
+        
+        addRecipients();
+        LOG.info("成功添加收款人信息");
+    }
+
+    private void addInitialBalance() {
+        User user1 = userDao.findByUsername("user1");
+        User user2 = userDao.findByUsername("user2");
+        User user3 = userDao.findByUsername("user3");
+        
+        if (user1 != null) {
+            PrimaryAccount p1 = user1.getPrimaryAccount();
+            SavingsAccount s1 = user1.getSavingsAccount();
+            p1.setAccountBalance(INITIAL_BALANCE);
+            s1.setAccountBalance(INITIAL_BALANCE);
+            primaryAccountDao.save(p1);
+            savingsAccountDao.save(s1);
+            LOG.info("user1 主账户和储蓄账户已存入5000元");
+        }
+        
+        if (user2 != null) {
+            PrimaryAccount p2 = user2.getPrimaryAccount();
+            SavingsAccount s2 = user2.getSavingsAccount();
+            p2.setAccountBalance(INITIAL_BALANCE);
+            s2.setAccountBalance(INITIAL_BALANCE);
+            primaryAccountDao.save(p2);
+            savingsAccountDao.save(s2);
+            LOG.info("user2 主账户和储蓄账户已存入5000元");
+        }
+        
+        if (user3 != null) {
+            PrimaryAccount p3 = user3.getPrimaryAccount();
+            SavingsAccount s3 = user3.getSavingsAccount();
+            p3.setAccountBalance(INITIAL_BALANCE);
+            s3.setAccountBalance(INITIAL_BALANCE);
+            primaryAccountDao.save(p3);
+            savingsAccountDao.save(s3);
+            LOG.info("user3 主账户和储蓄账户已存入5000元");
+        }
+    }
+
+    private void addRecipients() {
+        User user1 = userDao.findByUsername("user1");
+        User user2 = userDao.findByUsername("user2");
+        User user3 = userDao.findByUsername("user3");
+        
+        if (user1 != null && user2 != null) {
+            addRecipient(user1, "user2", "李四", "user2@bank.com", "13800138002", "user2");
+        }
+        
+        if (user1 != null && user3 != null) {
+            addRecipient(user1, "user3", "王五", "user3@bank.com", "13800138003", "user3");
+        }
+        
+        if (user2 != null && user1 != null) {
+            addRecipient(user2, "user1", "张三", "user1@bank.com", "13800138001", "user1");
+        }
+        
+        if (user2 != null && user3 != null) {
+            addRecipient(user2, "user3", "王五", "user3@bank.com", "13800138003", "user3");
+        }
+        
+        if (user3 != null && user1 != null) {
+            addRecipient(user3, "user1", "张三", "user1@bank.com", "13800138001", "user1");
+        }
+        
+        if (user3 != null && user2 != null) {
+            addRecipient(user3, "user2", "李四", "user2@bank.com", "13800138002", "user2");
+        }
+    }
+
+    private void addRecipient(User owner, String recipientName, String recipientFullName, String email, String phone, String accountUsername) {
+        Recipient recipient = new Recipient();
+        recipient.setName(recipientFullName);
+        recipient.setEmail(email);
+        recipient.setPhone(phone);
+        recipient.setAccountNumber(accountUsername);
+        recipient.setDescription(recipientName + " - " + recipientFullName);
+        recipient.setUser(owner);
+        recipientDao.save(recipient);
+        LOG.info("为 {} 添加收款人: {}", owner.getUsername(), recipientFullName);
     }
 
     private void createTestUser(String username, String password, String firstName, String lastName, String email, String phone, Role role) {

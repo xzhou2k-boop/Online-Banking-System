@@ -86,7 +86,7 @@ public class TransferController {
     public String recipientEdit(@RequestParam(value = "recipientName") String recipientName, Model model,
             Principal principal) {
 
-        Recipient recipient = transactionService.findRecipientByName(recipientName);
+        Recipient recipient = transactionService.findRecipientByName(recipientName, principal);
         List<Recipient> recipientList = transactionService.findRecipientList(principal);
 
         model.addAttribute("recipientList", recipientList);
@@ -100,7 +100,7 @@ public class TransferController {
     public String recipientDelete(@RequestParam(value = "recipientName") String recipientName, Model model,
             Principal principal) {
 
-        transactionService.deleteRecipientByName(recipientName);
+        transactionService.deleteRecipientByName(recipientName, principal);
 
         List<Recipient> recipientList = transactionService.findRecipientList(principal);
 
@@ -131,7 +131,7 @@ public class TransferController {
         }
         User user = userService.findByUsername(principal.getName());
 
-        Recipient recipient = transactionService.findRecipientByName(recipientName);
+        Recipient recipient = transactionService.findRecipientByName(recipientName, principal);
         transactionService.toSomeoneElseTransfer(recipient, accountType, amount, user.getPrimaryAccount(),
                 user.getSavingsAccount());
 
