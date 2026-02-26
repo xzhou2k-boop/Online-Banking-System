@@ -39,8 +39,8 @@ public class TestDataGenerator implements CommandLineRunner {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public TestDataGenerator(RoleDao roleDao, UserDao userDao, PrimaryAccountDao primaryAccountDao,
-                            SavingsAccountDao savingsAccountDao, AccountService accountService, 
-                            RecipientDao recipientDao, BCryptPasswordEncoder passwordEncoder) {
+            SavingsAccountDao savingsAccountDao, AccountService accountService,
+            RecipientDao recipientDao, BCryptPasswordEncoder passwordEncoder) {
         this.roleDao = roleDao;
         this.userDao = userDao;
         this.primaryAccountDao = primaryAccountDao;
@@ -53,38 +53,38 @@ public class TestDataGenerator implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (args.length > 0 && "init-test-data".equals(args[0])) {
-            LOG.info("开始生成测试用户数据...");
+            LOG.info("Start creating test user data...");
             generateTestUsers();
-            LOG.info("测试用户数据生成完成！");
+            LOG.info("Test user data generation finished!");
         }
     }
 
     public void generateTestUsers() {
         Role userRole = roleDao.findByName("ROLE_USER");
-        
+
         if (userRole == null) {
-            LOG.warn("角色 ROLE_USER 不存在，请先运行系统初始化");
+            LOG.warn("Role ROLE_USER does not exist. Please run system initialization first.");
             return;
         }
 
         createTestUser("user1", "password1", "张", "三", "user1@bank.com", "13800138001", userRole);
         createTestUser("user2", "password2", "李", "四", "user2@bank.com", "13800138002", userRole);
         createTestUser("user3", "password3", "王", "五", "user3@bank.com", "13800138003", userRole);
-        
-        LOG.info("成功创建3个测试用户");
-        
+
+        LOG.info("Successfully created 3 test users");
+
         addInitialBalance();
-        LOG.info("成功为每个账户存入5000元");
-        
+        LOG.info("Successfully deposited 5,000 yuan to each account");
+
         addRecipients();
-        LOG.info("成功添加收款人信息");
+        LOG.info("Successfully added recipient details");
     }
 
     private void addInitialBalance() {
         User user1 = userDao.findByUsername("user1");
         User user2 = userDao.findByUsername("user2");
         User user3 = userDao.findByUsername("user3");
-        
+
         if (user1 != null) {
             PrimaryAccount p1 = user1.getPrimaryAccount();
             SavingsAccount s1 = user1.getSavingsAccount();
@@ -92,9 +92,9 @@ public class TestDataGenerator implements CommandLineRunner {
             s1.setAccountBalance(INITIAL_BALANCE);
             primaryAccountDao.save(p1);
             savingsAccountDao.save(s1);
-            LOG.info("user1 主账户和储蓄账户已存入5000元");
+            LOG.info("user1\'s main and savings accounts have been credited with 5,000 yuan each");
         }
-        
+
         if (user2 != null) {
             PrimaryAccount p2 = user2.getPrimaryAccount();
             SavingsAccount s2 = user2.getSavingsAccount();
@@ -102,9 +102,9 @@ public class TestDataGenerator implements CommandLineRunner {
             s2.setAccountBalance(INITIAL_BALANCE);
             primaryAccountDao.save(p2);
             savingsAccountDao.save(s2);
-            LOG.info("user2 主账户和储蓄账户已存入5000元");
+            LOG.info("user2\'s main and savings accounts have been credited with 5,000 yuan each");
         }
-        
+
         if (user3 != null) {
             PrimaryAccount p3 = user3.getPrimaryAccount();
             SavingsAccount s3 = user3.getSavingsAccount();
@@ -112,7 +112,7 @@ public class TestDataGenerator implements CommandLineRunner {
             s3.setAccountBalance(INITIAL_BALANCE);
             primaryAccountDao.save(p3);
             savingsAccountDao.save(s3);
-            LOG.info("user3 主账户和储蓄账户已存入5000元");
+            LOG.info("user3\'s main and savings accounts have been credited with 5,000 yuan each");
         }
     }
 
@@ -120,33 +120,34 @@ public class TestDataGenerator implements CommandLineRunner {
         User user1 = userDao.findByUsername("user1");
         User user2 = userDao.findByUsername("user2");
         User user3 = userDao.findByUsername("user3");
-        
+
         if (user1 != null && user2 != null) {
             addRecipient(user1, "user2", "李四", "user2@bank.com", "13800138002", "user2");
         }
-        
+
         if (user1 != null && user3 != null) {
             addRecipient(user1, "user3", "王五", "user3@bank.com", "13800138003", "user3");
         }
-        
+
         if (user2 != null && user1 != null) {
             addRecipient(user2, "user1", "张三", "user1@bank.com", "13800138001", "user1");
         }
-        
+
         if (user2 != null && user3 != null) {
             addRecipient(user2, "user3", "王五", "user3@bank.com", "13800138003", "user3");
         }
-        
+
         if (user3 != null && user1 != null) {
             addRecipient(user3, "user1", "张三", "user1@bank.com", "13800138001", "user1");
         }
-        
+
         if (user3 != null && user2 != null) {
             addRecipient(user3, "user2", "李四", "user2@bank.com", "13800138002", "user2");
         }
     }
 
-    private void addRecipient(User owner, String recipientName, String recipientFullName, String email, String phone, String accountUsername) {
+    private void addRecipient(User owner, String recipientName, String recipientFullName, String email, String phone,
+            String accountUsername) {
         Recipient recipient = new Recipient();
         recipient.setName(recipientFullName);
         recipient.setEmail(email);
@@ -155,12 +156,13 @@ public class TestDataGenerator implements CommandLineRunner {
         recipient.setDescription(recipientName + " - " + recipientFullName);
         recipient.setUser(owner);
         recipientDao.save(recipient);
-        LOG.info("为 {} 添加收款人: {}", owner.getUsername(), recipientFullName);
+        LOG.info(" {} add recipient: {}", owner.getUsername(), accountUsername);
     }
 
-    private void createTestUser(String username, String password, String firstName, String lastName, String email, String phone, Role role) {
+    private void createTestUser(String username, String password, String firstName, String lastName, String email,
+            String phone, Role role) {
         if (userDao.findByUsername(username) != null) {
-            LOG.info("用户 {} 已存在，跳过", username);
+            LOG.info("User {} is exist，skip", username);
             return;
         }
 
@@ -181,6 +183,6 @@ public class TestDataGenerator implements CommandLineRunner {
         user.setUserRoles(userRoles);
 
         userDao.save(user);
-        LOG.info("创建用户: {} (密码: {})", username, password);
+        LOG.info("Create User: {} (Password: {})", username, password);
     }
 }

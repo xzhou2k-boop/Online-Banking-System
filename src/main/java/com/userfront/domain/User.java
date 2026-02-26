@@ -23,7 +23,7 @@ import com.userfront.domain.security.Authority;
 import com.userfront.domain.security.UserRole;
 
 @Entity
-public class User implements UserDetails{
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -38,7 +38,7 @@ public class User implements UserDetails{
     private String email;
     private String phone;
 
-    private boolean enabled=true;
+    private boolean enabled = true;
 
     @OneToOne
     private PrimaryAccount primaryAccount;
@@ -202,6 +202,5 @@ public class User implements UserDetails{
     public boolean isEnabled() {
         return enabled;
     }
-
 
 }

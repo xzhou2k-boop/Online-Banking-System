@@ -506,6 +506,7 @@ public interface AccountService {
 #### 3.4.3 核心类设计
 
 **TransactionService 接口**:
+
 ```java
 public interface TransactionService {
     List<PrimaryTransaction> findPrimaryTransactionList(String username);
@@ -524,6 +525,8 @@ public interface TransactionService {
     void toSomeoneElseTransfer(Recipient recipient, String accountType, 
                                 String amount, PrimaryAccount primaryAccount, 
                                 SavingsAccount savingsAccount);
+    List<PrimaryTransaction> findAllPrimaryTransactions();
+    List<SavingsTransaction> findAllSavingsTransactions();
 }
 ```
 
@@ -534,24 +537,71 @@ public interface TransactionService {
 | 功能 | 说明 |
 |------|------|
 | 创建预约 | 用户预约银行网点办理业务 |
-| 查看预约 | 查看所有预约记录(管理员可见全部) |
-| 确认预约 | 管理员确认用户预约 |
+| 查看预约 | 查看自己的预约列表 |
 
 #### 3.5.2 核心类设计
 
 **AppointmentService 接口**:
+
 ```java
 public interface AppointmentService {
     Appointment createAppointment(Appointment appointment);
     List<Appointment> findAll();
+    List<Appointment> findByUsername(String username);
     Appointment findAppointment(Long id);
     void confirmAppointment(Long id);
 }
 ```
 
-### 3.6 安全模块
+#### 3.6 管理员功能模块
 
-#### 3.6.1 安全架构
+#### 3.6.1 功能列表
+
+| 功能     | 说明                   |
+| -------- | ---------------------- |
+| 用户管理 | 查看、启用/禁用用户    |
+| 预约管理 | 查看、确认用户预约     |
+| 交易监控 | 查看所有用户的交易记录 |
+
+#### 3.6.2 核心类设计
+
+**UserService 接口**:
+
+```java
+public interface UserService {
+    ...
+    List<User> findUserList();
+    void enableUser(String username);
+    void disableUser(String username);
+    ...
+}
+```
+
+**AppointmentService 接口**:
+
+```java
+public interface AppointmentService {
+	...
+    List<Appointment> findAll();
+    void confirmAppointment(Long id);
+	...
+}
+```
+
+**TransactionService 接口**:
+
+```java
+public interface TransactionService {
+    ...
+    List<PrimaryTransaction> findAllPrimaryTransactions();
+    List<SavingsTransaction> findAllSavingsTransactions();
+	...
+}
+```
+
+### 3.7 安全模块
+
+#### 3.7.1 安全架构
 
 系统使用 Spring Security 实现安全认证：
 
@@ -562,7 +612,7 @@ public interface AppointmentService {
 | SecurityConfig | Spring Security 配置类 |
 | RequestFilter | CORS 跨域过滤器 |
 
-#### 3.6.2 权限控制
+#### 3.7.2 权限控制
 
 | URL | 角色要求 | 说明 |
 |-----|---------|------|
@@ -575,62 +625,6 @@ public interface AppointmentService {
 | /user/profile | ROLE_USER | 个人资料 |
 | /api/* | ROLE_ADMIN | REST API |
 | /admin/* | ROLE_ADMIN | 管理员页面 |
-
-#### 3.7 管理员功能模块
-
-#### 3.7.1 管理员菜单
-
-系统为管理员用户显示"系统管理"菜单，包含以下子菜单：
-
-| 子菜单 | URL | 功能 |
-|--------|-----|------|
-| 用户管理 | /admin/users | 查看、启用/禁用用户 |
-| 预约管理 | /admin/appointments | 查看、确认用户预约 |
-| 交易监控 | /admin/transactions | 查看所有用户的交易记录 |
-
-#### 3.7.2 预约列表功能
-
-用户可以查看自己的预约列表：
-
-- 新增预约列表页面：appointmentList.html
-- 新增预约列表Controller：/appointment/list
-- 用户只能查看自己创建的预约
-
-#### 3.7.3 交易监控功能
-
-管理员可以查看所有用户的交易记录：
-
-- 新增获取所有主账户交易的方法：findAllPrimaryTransactions()
-- 新增获取所有储蓄账户交易的方法：findAllSavingsTransactions()
-
-#### 3.7.4 收款人隔离
-
-为保护用户隐私，收款人数据按用户隔离：
-
-- 收款人查询按用户ID过滤
-- 收款人删除按用户ID过滤
-- 用户只能操作自己的收款人
-
-#### 3.7.5 测试数据完善
-
-测试用户生成时自动添加：
-
-- 每个测试用户的主账户和储蓄账户存入5000元初始余额
-- 为测试用户互相添加收款人，方便转账测试
-
-#### 3.7.6 货币符号本地化
-
-将系统货币符号从美元($)改为人民币(¥)：
-
-- userFront.html
-- primaryAccount.html
-- savingsAccount.html
-- deposit.html
-- withdraw.html
-- betweenAccounts.html
-- toSomeoneElse.html
-
----
 
 ## 四、页面设计
 
@@ -648,8 +642,12 @@ public interface AppointmentService {
 | 账户间转账 | /transfer/betweenAccounts | 账户间转账 |
 | 向他人转账 | /transfer/toSomeoneElse | 向收款人转账 |
 | 收款人管理 | /transfer/recipient | 收款人列表和管理 |
-| 预约页 | /appointment/create | 创建预约 |
-| 个人资料 | /user/profile | 查看和修改个人信息 |
+| 预约办理 | /appointment/create | 创建预约 |
+| 我的预约   | /appointmentList          | 当前用户预约列表                  |
+| 个人资料   | /user/profile             | 查看和修改个人信息 |
+| 用户管理 | /admin/users | 系统管理：查看用户，启用/禁用用户 |
+| 预约管理 | /admin/appointments | 系统管理：查看预约列表，确认预约 |
+| 交易监控 | /admin/transactions | 系统管理：查看所有账户交易记录 |
 
 ### 4.2 导航结构
 
@@ -731,7 +729,19 @@ public interface AppointmentService {
 | GET | /appointment/create | USER | 创建预约页面 |
 | POST | /appointment/create | USER | 创建预约 |
 
-### 5.3 API 详细说明
+#### 5.2.6 管理员控制器 (AdminController)
+
+| 方法 | 路径 | 角色 | 说明 |
+|------|------|------|------|
+| GET | /admin | ADMIN | 管理员首页，重定向到用户列表 |
+| GET | /admin/users | ADMIN | 用户管理页面 |
+| GET | /admin/user/{username}/enable | ADMIN | 启用用户 |
+| GET | /admin/user/{username}/disable | ADMIN | 禁用用户 |
+| GET | /admin/appointments | ADMIN | 预约管理页面 |
+| GET | /admin/appointment/{id}/confirm | ADMIN | 确认预约 |
+| GET | /admin/transactions | ADMIN | 交易监控页面 |
+
+#### 5.3 API 详细说明
 
 #### 5.3.1 用户管理 API
 
