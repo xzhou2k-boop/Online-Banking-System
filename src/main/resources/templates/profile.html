@@ -8,6 +8,9 @@
         <div class="col-md-6">
             <h2 class="title">个人资料</h2>
             <hr/>
+            <div class="alert alert-success" th:if="${profileSuccess}">
+                <span th:text="${profileSuccess}"></span>
+            </div>
             <form method="post" th:action="@{/user/profile}">
                 <input type="hidden" name="id" th:value="${user.userId}"/>
 
@@ -47,8 +50,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="email" class="cols-sm-2 control-label">邮箱</label><span
-                        class="bg-danger pull-right" th:if="${emailExists}">邮箱已存在</span>
+                    <label for="email" class="cols-sm-2 control-label">邮箱</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-envelope fa"
@@ -56,12 +58,12 @@
                             <input type="text" class="form-control" th:value="${user.email}" id="email" name="email"
                                    roleId="email" placeholder="请输入邮箱地址" required="required"/>
                         </div>
+                        <span class="bg-danger" th:if="${emailExists}">邮箱已存在</span>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="username" class="cols-sm-2 control-label">用户名</label><span
-                        class="bg-danger pull-right" th:if="${usernameExists}">用户名已存在</span>
+                    <label for="username" class="cols-sm-2 control-label">用户名</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
@@ -69,6 +71,7 @@
                                    name="username" roleId="username" placeholder="请输入用户名"
                                    required="required"/>
                         </div>
+                        <span class="bg-danger" th:if="${usernameExists}">用户名已存在</span>
                     </div>
                 </div>
 

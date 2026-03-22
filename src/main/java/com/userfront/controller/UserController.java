@@ -3,6 +3,9 @@ package com.userfront.controller;
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,19 +33,56 @@ public class UserController {
     }
 
     @RequestMapping(value = "/profile", method = RequestMethod.POST)
-    public String profilePost(@ModelAttribute("user") User newUser, Model model) {
-        User user = userService.findByUsername(newUser.getUsername());
-        user.setUsername(newUser.getUsername());
-        user.setFirstName(newUser.getFirstName());
-        user.setLastName(newUser.getLastName());
-        user.setEmail(newUser.getEmail());
-        user.setPhone(newUser.getPhone());
+    public String profilePost(@ModelAttribute("user") User newUser, Model model, Principal principal) {
+        User currentUser = userService.findByUsername(principal.getName());
+        
+        if (!newUser.getEmail().equals(currentUser.getEmail())) {
+            User existingUserByEmail = userService.findByEmail(newUser.getEmail());
+            if (existingUserByEmail != null && !existingUserByEmail.getUsername().equals(principal.getName())) {
+                model.addAttribute("emailExists", true);
+                model.addAttribute("user", currentUser);
+                return "profile";
+            }
+        }
+        
+        if (!newUser.getUsername().equals(currentUser.getUsername())) {
+            User existingUserByUsername = userService.findByUsername(newUser.getUsername());
+            if (existingUserByUsername != null) {
+                model.addAttribute("usernameExists", true);
+                model.addAttribute("user", currentUser);
+                return "profile";
+            }
+        }
+        
+        boolean usernameChanged = !newUser.getUsername().equals(currentUser.getUsername());
+        String oldUsername = currentUser.getUsername();
+        
+        currentUser.setUsername(newUser.getUsername());
+        currentUser.setFirstName(newUser.getFirstName());
+        currentUser.setLastName(newUser.getLastName());
+        currentUser.setEmail(newUser.getEmail());
+        currentUser.setPhone(newUser.getPhone());
 
-        model.addAttribute("user", user);
-
-        userService.saveUser(user);
+        userService.saveUser(currentUser);
+        
+        if (usernameChanged) {
+            updateSecurityContext(newUser.getUsername());
+        }
+        
+        model.addAttribute("user", currentUser);
+        model.addAttribute("profileSuccess", "个人资料更新成功");
 
         return "profile";
+    }
+    
+    private void updateSecurityContext(String newUsername) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                newUsername, auth.getCredentials(), auth.getAuthorities());
+            newAuth.setDetails(auth.getDetails());
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+        }
     }
 
     @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)

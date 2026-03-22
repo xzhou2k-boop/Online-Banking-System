@@ -67,9 +67,9 @@ public class TestDataGenerator implements CommandLineRunner {
             return;
         }
 
-        createTestUser("user1", "password1", "张", "三", "user1@bank.com", "13800138001", userRole);
-        createTestUser("user2", "password2", "李", "四", "user2@bank.com", "13800138002", userRole);
-        createTestUser("user3", "password3", "王", "五", "user3@bank.com", "13800138003", userRole);
+        createTestUser("user1", "password1", "张", "三", "user1@bank.com", "13800138001", userRole, true);
+        createTestUser("user2", "password2", "李", "四", "user2@bank.com", "13800138002", userRole, true);
+        createTestUser("user3", "password3", "王", "五", "user3@bank.com", "13800138003", userRole, false);
 
         LOG.info("Successfully created 3 test users");
 
@@ -160,7 +160,7 @@ public class TestDataGenerator implements CommandLineRunner {
     }
 
     private void createTestUser(String username, String password, String firstName, String lastName, String email,
-            String phone, Role role) {
+            String phone, Role role, boolean isEnabled) {
         if (userDao.findByUsername(username) != null) {
             LOG.info("User {} is exist，skip", username);
             return;
@@ -173,7 +173,7 @@ public class TestDataGenerator implements CommandLineRunner {
         user.setLastName(lastName);
         user.setEmail(email);
         user.setPhone(phone);
-        user.setEnabled(true);
+        user.setEnabled(isEnabled);
 
         user.setPrimaryAccount(accountService.createPrimaryAccount());
         user.setSavingsAccount(accountService.createSavingsAccount());

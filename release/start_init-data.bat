@@ -1,0 +1,1 @@
+java -jar OnlineBankingSystem-1.0.0.jar init-test-data
