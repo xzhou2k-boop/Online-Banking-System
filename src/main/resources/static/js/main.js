@@ -73,12 +73,19 @@ $(document).ready(function() {
 
     $.transferDisplay();
 
+    var now = new Date();
+    var pad = function(n) { return ('0' + n).slice(-2); };
+    var currentMinute = Math.floor(now.getMinutes() / 10) * 10+10;
+    var minDate = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) 
+                + ' ' + pad(now.getHours()) + ':' + pad(currentMinute);
+
     $(".form_datetime").datetimepicker({
-        format: "yyyy-mm-dd hh:mm",
+        format: "yyyy-mm-dd hh:ii",
         autoclose: true,
         todayBtn: true,
-        startDate: "2026-01-01 10:00",
+        startDate: minDate,
         minuteStep: 10,
+        todayHighlight:true,
         language: 'zh-CN'
     });
 

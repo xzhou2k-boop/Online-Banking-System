@@ -49,6 +49,10 @@ public class TransferController {
             @ModelAttribute("transferTo") String transferTo,
             @ModelAttribute("amount") String amount,
             Principal principal) throws Exception {
+        if(amount.isEmpty()){
+            throw new IllegalArgumentException("请输入转账金额");
+        }
+
         double transferAmount = Double.parseDouble(amount);
         if (transferAmount <= 0) {
             throw new IllegalArgumentException("转账金额必须大于0");
@@ -125,6 +129,11 @@ public class TransferController {
     public String toSomeoneElsePost(@ModelAttribute("recipientName") String recipientName,
             @ModelAttribute("accountType") String accountType, @ModelAttribute("amount") String amount,
             Principal principal) {
+
+        if(amount.isEmpty()){
+            throw new IllegalArgumentException("请输入转账金额");
+        }
+
         double transferAmount = Double.parseDouble(amount);
         if (transferAmount <= 0) {
             throw new IllegalArgumentException("转账金额必须大于0");

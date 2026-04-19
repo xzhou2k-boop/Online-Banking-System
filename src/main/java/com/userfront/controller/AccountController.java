@@ -66,10 +66,20 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/deposit", method = RequestMethod.POST)
-    public String depositPOST(@ModelAttribute("amount") String amount, @ModelAttribute("accountType") String accountType, Principal principal) {
+    public String depositPOST(@ModelAttribute("amount") String amount,
+                              @ModelAttribute("accountType")
+                              String accountType, Principal principal) {
+        if(amount.isEmpty()){
+            throw new IllegalArgumentException("请输入存款金额");
+        }
+
         double depositAmount = Double.parseDouble(amount);
         if (depositAmount <= 0) {
             throw new IllegalArgumentException("存款金额必须大于0");
+        }
+
+        if(accountType.isEmpty()){
+            throw new IllegalArgumentException("请选择账户类型");
         }
         accountService.deposit(accountType, depositAmount, principal);
 
@@ -86,10 +96,19 @@ public class AccountController {
 
     @RequestMapping(value = "/withdraw", method = RequestMethod.POST)
     public String withdrawPOST(@ModelAttribute("amount") String amount, @ModelAttribute("accountType") String accountType, Principal principal) {
+        if(amount.isEmpty()){
+            throw new IllegalArgumentException("请输入取款金额");
+        }
+
         double withdrawAmount = Double.parseDouble(amount);
         if (withdrawAmount <= 0) {
             throw new IllegalArgumentException("取款金额必须大于0");
         }
+
+        if(accountType.isEmpty()){
+            throw new IllegalArgumentException("请选择账户类型");
+        }
+
         accountService.withdraw(accountType, withdrawAmount, principal);
 
         return "redirect:/userFront";
