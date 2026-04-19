@@ -59,12 +59,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().failureUrl("/index?error").defaultSuccessUrl("/userFront").loginPage("/index").permitAll()
                 .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/index?logout")
-                .deleteCookies("remember-me").permitAll()
-                .and()
+                .deleteCookies("remember-me").permitAll();
+/*Error         .and()
                 .rememberMe()
                     .rememberMeParameter("remember-me")
                     .key("uniqueAndSecretKey")
                     .tokenValiditySeconds(1209600);
+*/
         // 1. 放行 H2 Console 的所有请求
         http
                 .authorizeRequests()

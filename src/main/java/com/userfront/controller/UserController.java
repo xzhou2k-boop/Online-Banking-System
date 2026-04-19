@@ -98,7 +98,8 @@ public class UserController {
             return "profile";
         }
         
-        if (newPassword == null || newPassword.length() < 6) {
+//        if (newPassword == null || newPassword.length() < 6) {
+        if (newPassword == null) { // Error
             model.addAttribute("passwordError", "密码长度不能少于6位");
             model.addAttribute("user", user);
             return "profile";

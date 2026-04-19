@@ -83,7 +83,7 @@ $(document).ready(function() {
         format: "yyyy-mm-dd hh:ii",
         autoclose: true,
         todayBtn: true,
-        startDate: minDate,
+//        startDate: minDate,  //Error
         minuteStep: 10,
         todayHighlight:true,
         language: 'zh-CN'

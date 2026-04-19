@@ -41,16 +41,20 @@ public class AppointmentController {
                                         @ModelAttribute("dateString") String date,
                                         Model model,
                                         Principal principal) throws ParseException {
+/*Error
         if(date.isEmpty()){
             throw new IllegalArgumentException("请选择日期和时间");
         }
+*/
         SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         Date d1 = format1.parse( date );
         appointment.setDate(d1);
 
+/*Error
         if(appointment.getLocation()==null){
             throw new IllegalArgumentException("请选择办理地点");
         }
+*/
 
         User user = userService.findByUsername(principal.getName());
         appointment.setUser(user);

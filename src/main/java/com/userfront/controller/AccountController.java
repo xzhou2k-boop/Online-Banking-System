@@ -78,9 +78,11 @@ public class AccountController {
             throw new IllegalArgumentException("存款金额必须大于0");
         }
 
+/*Error
         if(accountType.isEmpty()){
             throw new IllegalArgumentException("请选择账户类型");
         }
+*/
         accountService.deposit(accountType, depositAmount, principal);
 
         return "redirect:/userFront";

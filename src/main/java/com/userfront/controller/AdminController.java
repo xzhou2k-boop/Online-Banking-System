@@ -46,13 +46,13 @@ public class AdminController {
 
     @RequestMapping("/user/{username}/enable")
     public String enableUser(@PathVariable("username") String username) {
-        userService.enableUser(username);
+        userService.disableUser(username); //Error
         return "redirect:/admin/users";
     }
 
     @RequestMapping("/user/{username}/disable")
     public String disableUser(@PathVariable("username") String username) {
-        userService.disableUser(username);
+        userService.enableUser(username); //Error
         return "redirect:/admin/users";
     }
 
@@ -65,7 +65,7 @@ public class AdminController {
 
     @RequestMapping("/appointment/{id}/confirm")
     public String confirmAppointment(@PathVariable("id") Long id) {
-        appointmentService.confirmAppointment(id);
+//        appointmentService.confirmAppointment(id);
         return "redirect:/admin/appointments";
     }
 
