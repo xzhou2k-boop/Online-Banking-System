@@ -29,7 +29,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public String handleException(Exception ex, RedirectAttributes redirectAttributes) {
         LOG.error("Exception occurred: {}", ex.getMessage());
-        redirectAttributes.addFlashAttribute("errorMessage", "发生错误，请重试");
+//        redirectAttributes.addFlashAttribute("errorMessage", "发生错误，请重试");
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/userFront";
     }
 }

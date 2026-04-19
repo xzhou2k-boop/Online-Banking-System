@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 /**
  * 账户管理功能测试类
  * 包含账户余额查看、存款、取款相关的所有测试用例
- * 用例编号：TC-ACCT-040 至 TC-ACCT-066
+ * 用例编号：TC-ACCT-040 至 TC-ACCT-073
  */
 public class AccountManagementTest extends BaseTest {
 
@@ -33,8 +33,13 @@ public class AccountManagementTest extends BaseTest {
         UserFrontPage userFrontPage = new UserFrontPage(driver);
         userFrontPage.navigateToPrimaryAccount();
 
+        PrimaryAccountPage primaryAccountPage = new PrimaryAccountPage(driver);
         // 验证：应跳转到主账户页面
-        Assert.assertTrue(driver.getCurrentUrl().contains("/account/primaryAccount"), "应跳转到主账户页面");
+        Assert.assertTrue(primaryAccountPage.isPrimaryAccountPageDisplayed(),"应跳转到主账户页面");
+
+        String primaryBalance = primaryAccountPage.getAccountBalance();
+        Assert.assertNotNull(primaryBalance, "主账户页应显示主账户余额");
+
         extentTest.pass("主账户余额查看成功");
     }
 
@@ -55,7 +60,12 @@ public class AccountManagementTest extends BaseTest {
         UserFrontPage userFrontPage = new UserFrontPage(driver);
         userFrontPage.navigateToSavingsAccount();
 
-        Assert.assertTrue(driver.getCurrentUrl().contains("/account/savingsAccount"), "应跳转到储蓄账户页面");
+        SavingsAccountPage savingsAccountPage = new SavingsAccountPage(driver);
+        Assert.assertTrue(savingsAccountPage.isSavingsAccountPageDisplayed(),"应跳转到储蓄账户页面");
+
+        String savingsBalance = savingsAccountPage.getAccountBalance();
+        Assert.assertNotNull(savingsBalance,"储蓄账户页应显示储蓄账户余额");
+
         extentTest.pass("储蓄账户余额查看成功");
     }
 
@@ -79,10 +89,11 @@ public class AccountManagementTest extends BaseTest {
         // 获取首页显示的账户余额
         String primaryBalance = userFrontPage.getPrimaryAccountBalance();
         String savingsBalance = userFrontPage.getSavingsAccountBalance();
-        
+
         // 验证：首页应显示两个账户的余额
         Assert.assertNotNull(primaryBalance, "首页应显示主账户余额");
         Assert.assertNotNull(savingsBalance, "首页应显示储蓄账户余额");
+
         extentTest.pass("首页正确显示账户余额");
     }
 
@@ -104,16 +115,30 @@ public class AccountManagementTest extends BaseTest {
         loginAsUser1();
         
         UserFrontPage userFrontPage = new UserFrontPage(driver);
+        double oldBalance = userFrontPage.getPrimaryAccountBalanceValue();
+
         userFrontPage.navigateToDeposit();
 
+
         DepositPage depositPage = new DepositPage(driver);
+        Assert.assertTrue(depositPage.isDepositPageDisplayed(),"跳转到存款页面");
         // 存款500元到主账户
-        depositPage.deposit("Primary Account", "500");
+        depositPage.deposit("Primary", "500");
 
         userFrontPage.waitForHomePage();
-        
-        String successMessage = userFrontPage.getSuccessMessage();
-        Assert.assertTrue(successMessage.contains("成功"), "应显示存款成功提示");
+
+        double newBalance = userFrontPage.getPrimaryAccountBalanceValue();
+
+        Assert.assertEquals(newBalance,oldBalance+500.00);
+
+        userFrontPage.navigateToPrimaryAccount();
+
+        PrimaryAccountPage primaryAccountPage = new PrimaryAccountPage(driver);
+        Assert.assertTrue(primaryAccountPage.isPrimaryAccountPageDisplayed(),"应跳转到主账户页面");
+
+        String amount = primaryAccountPage.getTransactionAmount(primaryAccountPage.getTransactionCount()-1);
+        Assert.assertEquals(amount,"+500.0");
+
         extentTest.pass("存款到主账户成功");
     }
 
@@ -135,16 +160,24 @@ public class AccountManagementTest extends BaseTest {
         loginAsUser1();
         
         UserFrontPage userFrontPage = new UserFrontPage(driver);
+        double oldBalance = userFrontPage.getSavingsAccountBalanceValue();
         userFrontPage.navigateToDeposit();
 
         DepositPage depositPage = new DepositPage(driver);
         // 存款300元到储蓄账户
-        depositPage.deposit("Savings Account", "300");
+        depositPage.deposit("Savings", "300");
 
         userFrontPage.waitForHomePage();
+
+        double newBalance = userFrontPage.getSavingsAccountBalanceValue();
+        Assert.assertEquals(newBalance,oldBalance+300.00);
         
-        String successMessage = userFrontPage.getSuccessMessage();
-        Assert.assertTrue(successMessage.contains("成功"), "应显示存款成功提示");
+        userFrontPage.navigateToSavingsAccount();
+        SavingsAccountPage savingsAccountPage = new SavingsAccountPage(driver);
+        Assert.assertTrue(savingsAccountPage.isSavingsAccountPageDisplayed(),"应跳转至储蓄账户页面");
+        String amount = savingsAccountPage.getTransactionAmount(savingsAccountPage.getTransactionCount()-1);
+        Assert.assertEquals(amount,"+300.0");
+
         extentTest.pass("存款到储蓄账户成功");
     }
 
@@ -169,9 +202,11 @@ public class AccountManagementTest extends BaseTest {
 
         DepositPage depositPage = new DepositPage(driver);
         // 存款金额为0
-        depositPage.deposit("Primary Account", "0");
+        depositPage.deposit("Primary", "0");
 
-        String errorMessage = depositPage.getErrorMessage();
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
         Assert.assertTrue(errorMessage.contains("大于0"), "应显示存款金额必须大于0错误");
         extentTest.pass("存款金额为0时显示正确错误提示");
     }
@@ -198,10 +233,13 @@ public class AccountManagementTest extends BaseTest {
         DepositPage depositPage = new DepositPage(driver);
         // 存款金额为负数
         depositPage.enterAmount("-100");
-        depositPage.selectAccount("Primary Account");
+        depositPage.selectAccount("Primary");
         depositPage.clickDepositButton();
 
-        String errorMessage = depositPage.getErrorMessage();
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
+
         Assert.assertTrue(errorMessage.contains("大于0"), "应显示存款金额必须大于0错误");
         extentTest.pass("存款金额为负数时显示正确错误提示");
     }
@@ -226,12 +264,13 @@ public class AccountManagementTest extends BaseTest {
         userFrontPage.navigateToDeposit();
 
         DepositPage depositPage = new DepositPage(driver);
-        depositPage.selectAccount("Primary Account");
+        depositPage.selectAccount("Primary");
         depositPage.enterAmount("");
         depositPage.clickDepositButton();
 
-        String errorMessage = depositPage.getErrorMessage();
-        Assert.assertTrue(errorMessage.contains("输入") || errorMessage.contains("请输入"), "应显示请输入存款金额错误");
+        userFrontPage.waitForHomePage();
+        String errorMessage = userFrontPage.getErrorMessage();
+        Assert.assertTrue(errorMessage.contains("empty") , "应显示请输入存款金额错误");
         extentTest.pass("存款金额为空时显示正确错误提示");
     }
 
@@ -253,15 +292,24 @@ public class AccountManagementTest extends BaseTest {
         loginAsUser1();
         
         UserFrontPage userFrontPage = new UserFrontPage(driver);
+        double oldBalance = userFrontPage.getPrimaryAccountBalanceValue();
+
         userFrontPage.navigateToWithdraw();
 
         WithdrawPage withdrawPage = new WithdrawPage(driver);
-        withdrawPage.withdraw("Primary Account", "100");
+        withdrawPage.withdraw("Primary", "100");
 
         userFrontPage.waitForHomePage();
+
+        double newBalance = userFrontPage.getPrimaryAccountBalanceValue();
+        Assert.assertEquals(newBalance,oldBalance-100.00);
         
-        String successMessage = userFrontPage.getSuccessMessage();
-        Assert.assertTrue(successMessage.contains("成功"), "应显示取款成功提示");
+        userFrontPage.navigateToPrimaryAccount();
+        PrimaryAccountPage primaryAccountPage = new PrimaryAccountPage(driver);
+        Assert.assertTrue(primaryAccountPage.isPrimaryAccountPageDisplayed(),"应跳转至主账户页面");
+        String amount = primaryAccountPage.getTransactionAmount(primaryAccountPage.getTransactionCount()-1);
+        Assert.assertEquals(amount,"-100.0");
+
         extentTest.pass("从主账户取款成功");
     }
 
@@ -283,15 +331,24 @@ public class AccountManagementTest extends BaseTest {
         loginAsUser1();
         
         UserFrontPage userFrontPage = new UserFrontPage(driver);
+        double oldBalance = userFrontPage.getSavingsAccountBalanceValue();
+
         userFrontPage.navigateToWithdraw();
 
         WithdrawPage withdrawPage = new WithdrawPage(driver);
-        withdrawPage.withdraw("Savings Account", "50");
+        withdrawPage.withdraw("Savings", "50");
 
         userFrontPage.waitForHomePage();
+
+        double newBalance = userFrontPage.getSavingsAccountBalanceValue();
+        Assert.assertEquals(newBalance,oldBalance-50.00);
         
-        String successMessage = userFrontPage.getSuccessMessage();
-        Assert.assertTrue(successMessage.contains("成功"), "应显示取款成功提示");
+        userFrontPage.navigateToSavingsAccount();
+        SavingsAccountPage savingsAccountPage = new SavingsAccountPage(driver);
+        Assert.assertTrue(savingsAccountPage.isSavingsAccountPageDisplayed(),"应跳转至储蓄账户页面");
+        String amount = savingsAccountPage.getTransactionAmount(savingsAccountPage.getTransactionCount()-1);
+        Assert.assertEquals(amount,"-50.0");
+
         extentTest.pass("从储蓄账户取款成功");
     }
 
@@ -315,9 +372,11 @@ public class AccountManagementTest extends BaseTest {
         userFrontPage.navigateToWithdraw();
 
         WithdrawPage withdrawPage = new WithdrawPage(driver);
-        withdrawPage.withdraw("Primary Account", "0");
+        withdrawPage.withdraw("Primary", "0");
 
-        String errorMessage = withdrawPage.getErrorMessage();
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
         Assert.assertTrue(errorMessage.contains("大于0"), "应显示取款金额必须大于0错误");
         extentTest.pass("取款金额为0时显示正确错误提示");
     }
@@ -343,10 +402,12 @@ public class AccountManagementTest extends BaseTest {
 
         WithdrawPage withdrawPage = new WithdrawPage(driver);
         withdrawPage.enterAmount("-50");
-        withdrawPage.selectAccount("Primary Account");
+        withdrawPage.selectAccount("Primary");
         withdrawPage.clickWithdrawButton();
 
-        String errorMessage = withdrawPage.getErrorMessage();
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
         Assert.assertTrue(errorMessage.contains("大于0"), "应显示取款金额必须大于0错误");
         extentTest.pass("取款金额为负数时显示正确错误提示");
     }
@@ -371,12 +432,14 @@ public class AccountManagementTest extends BaseTest {
         userFrontPage.navigateToWithdraw();
 
         WithdrawPage withdrawPage = new WithdrawPage(driver);
-        withdrawPage.selectAccount("Primary Account");
+        withdrawPage.selectAccount("Primary");
         withdrawPage.enterAmount("");
         withdrawPage.clickWithdrawButton();
 
-        String errorMessage = withdrawPage.getErrorMessage();
-        Assert.assertTrue(errorMessage.contains("输入") || errorMessage.contains("请输入"), "应显示请输入取款金额错误");
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
+        Assert.assertTrue(errorMessage.contains("empty"), "应显示请输入取款金额错误");
         extentTest.pass("取款金额为空时显示正确错误提示");
     }
 
@@ -401,9 +464,11 @@ public class AccountManagementTest extends BaseTest {
 
         WithdrawPage withdrawPage = new WithdrawPage(driver);
         // 取款金额远大于账户余额
-        withdrawPage.withdraw("Primary Account", "999999");
+        withdrawPage.withdraw("Primary", "999999");
 
-        String errorMessage = withdrawPage.getErrorMessage();
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
         Assert.assertTrue(errorMessage.contains("余额不足"), "应显示余额不足错误");
         extentTest.pass("主账户余额不足时显示正确错误提示");
     }
@@ -428,11 +493,50 @@ public class AccountManagementTest extends BaseTest {
         userFrontPage.navigateToWithdraw();
 
         WithdrawPage withdrawPage = new WithdrawPage(driver);
-        withdrawPage.withdraw("Savings Account", "999999");
+        withdrawPage.withdraw("Savings", "999999");
 
-        String errorMessage = withdrawPage.getErrorMessage();
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
         Assert.assertTrue(errorMessage.contains("余额不足"), "应显示余额不足错误");
         extentTest.pass("储蓄账户余额不足时显示正确错误提示");
+    }
+
+    @Test(priority = 16,description = "TC-ACCT-042: 查看主账户交易记录")
+    public void testViewPrimaryAccountTransactionTable() {
+        extentTest = extentReports.createTest("testViewPrimaryAccountTransactionTable", "查看主账户余额");
+
+        // 登录user1账号
+        loginAsUser1();
+
+        // 进入主账户页面
+        UserFrontPage userFrontPage = new UserFrontPage(driver);
+        userFrontPage.navigateToPrimaryAccount();
+
+        PrimaryAccountPage primaryAccountPage = new PrimaryAccountPage(driver);
+        Assert.assertTrue(primaryAccountPage.isTransactionTableDisplayed(),"显示主账户交易记录");
+        Assert.assertTrue(primaryAccountPage.hasTransactions(),"存在主账户交易记录");
+
+        extentTest.pass("查看主账户交易记录成功");
+    }
+
+    @Test(priority = 17,description = "TC-ACCT-043: 查看储蓄账户交易记录")
+    public void testViewSavingsAccountTransactionTable() {
+        extentTest = extentReports.createTest("testViewPrimaryAccountBalance", "查看主账户余额");
+
+        // 登录user1账号
+        loginAsUser1();
+
+        // 进入主账户页面
+        UserFrontPage userFrontPage = new UserFrontPage(driver);
+        userFrontPage.navigateToSavingsAccount();
+
+        SavingsAccountPage savingsAccountPage = new SavingsAccountPage(driver);
+        Assert.assertTrue(savingsAccountPage.isSavingsAccountPageDisplayed(),"显示储蓄账户交易记录");
+        Assert.assertTrue(savingsAccountPage.hasTransactions(),"存在储蓄账户交易记录");
+
+        extentTest.pass("查看储蓄账户交易记录成功");
+
     }
 
     /**

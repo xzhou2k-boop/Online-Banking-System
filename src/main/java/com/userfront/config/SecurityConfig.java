@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.userfront.service.UserServiceImpl.UserSecurityService;
@@ -28,6 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserSecurityService userSecurityService;
 
     private static final String SALT = "salt"; // Salt should be protected carefully
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -63,6 +65,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .rememberMeParameter("remember-me")
                     .key("uniqueAndSecretKey")
                     .tokenValiditySeconds(1209600);
+        // 1. 放行 H2 Console 的所有请求
+        http
+                .authorizeRequests()
+                .antMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                // 2. 禁用 CSRF（H2 Console 需要）
+                .csrf()
+                .ignoringAntMatchers("/h2-console/**")
+                .and()
+                // 3. 允许同源 iframe 加载（H2 Console 需要）
+                .headers()
+                .frameOptions().sameOrigin();
     }
 
     @Autowired

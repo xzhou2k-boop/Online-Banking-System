@@ -57,11 +57,37 @@ public class UserFrontPage extends HomePage {
     }
 
     /**
+     * 获取主账户余额（数值）
+     * @return 余额数值
+     */
+    public double getPrimaryAccountBalanceValue() {
+        String balanceStr = getPrimaryAccountBalance().trim();
+        try {
+            return Double.parseDouble(balanceStr);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
+    /**
      * 获取储蓄账户余额
      * @return 储蓄账户余额文本
      */
     public String getSavingsAccountBalance() {
         return driver.findElement(By.xpath("//div[contains(@class,'panel-success')]//h1")).getText();
+    }
+
+    /**
+     * 获取储蓄账户余额（数值）
+     * @return 余额数值
+     */
+    public double getSavingsAccountBalanceValue() {
+        String balanceStr = getSavingsAccountBalance().trim();
+        try {
+            return Double.parseDouble(balanceStr);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
     }
 
     /**

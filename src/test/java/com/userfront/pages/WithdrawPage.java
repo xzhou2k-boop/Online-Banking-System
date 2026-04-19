@@ -26,7 +26,7 @@ public class WithdrawPage {
     /**
      * 账户选择下拉框
      */
-    @FindBy(xpath = "//select[@id='account']")
+    @FindBy(xpath = "//select[@id='accountType']")
     private WebElement accountSelect;
 
     /**
@@ -73,7 +73,7 @@ public class WithdrawPage {
      */
     public void selectAccount(String accountType) {
         Select select = new Select(accountSelect);
-        select.selectByValue(accountType);
+        select.selectByVisibleText(accountType);
     }
 
     /**

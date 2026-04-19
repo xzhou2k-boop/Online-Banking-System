@@ -21,7 +21,7 @@ public class TransferTest extends BaseTest {
      * 2. 进入账户间转账页面
      * 3. 选择转出账户：主账户
      * 4. 选择转入账户：储蓄账户
-     * 5. 输入转账金额：100元
+     * 5. 输入转账金额：300元
      * 6. 点击转账按钮
      * 预期结果：
      * - 转账成功
@@ -36,19 +36,24 @@ public class TransferTest extends BaseTest {
         
         // 进入账户间转账页面
         UserFrontPage userFrontPage = new UserFrontPage(driver);
+        double primaryAccountBalance = userFrontPage.getPrimaryAccountBalanceValue();
+        double savingsAccountBalance = userFrontPage.getSavingsAccountBalanceValue();
+
         userFrontPage.navigateToTransferBetweenAccounts();
 
         // 执行转账操作：主账户转储蓄账户100元
         TransferPage transferPage = new TransferPage(driver);
-        transferPage.transferBetweenAccounts("Primary Account", "Savings Account", "100");
+        transferPage.transferBetweenAccounts("Primary", "Savings", "300");
 
         // 等待首页加载
         userFrontPage.waitForHomePage();
-        
-        // 获取成功提示信息
-        String successMessage = userFrontPage.getSuccessMessage();
-        // 验证：应显示转账成功
-        Assert.assertTrue(successMessage.contains("成功"), "应显示转账成功提示");
+
+        double newPrimaryAccountBalance = userFrontPage.getPrimaryAccountBalanceValue();
+        double newSavingsAccountBalance = userFrontPage.getSavingsAccountBalanceValue();
+
+        Assert.assertEquals(primaryAccountBalance, newPrimaryAccountBalance+300, "主账户转出成功");
+        Assert.assertEquals(savingsAccountBalance,newSavingsAccountBalance-300,"储蓄账户转入成功");
+
         extentTest.pass("主账户转储蓄账户成功");
     }
 
@@ -59,7 +64,7 @@ public class TransferTest extends BaseTest {
      * 2. 进入账户间转账页面
      * 3. 选择转出账户：储蓄账户
      * 4. 选择转入账户：主账户
-     * 5. 输入转账金额：50元
+     * 5. 输入转账金额：200
      * 6. 点击转账按钮
      * 预期结果：
      * - 转账成功
@@ -72,16 +77,23 @@ public class TransferTest extends BaseTest {
         loginAsUser1();
         
         UserFrontPage userFrontPage = new UserFrontPage(driver);
+        double primaryAccountBalance = userFrontPage.getPrimaryAccountBalanceValue();
+        double savingsAccountBalance = userFrontPage.getSavingsAccountBalanceValue();
+
         userFrontPage.navigateToTransferBetweenAccounts();
 
         TransferPage transferPage = new TransferPage(driver);
         // 储蓄账户转主账户50元
-        transferPage.transferBetweenAccounts("Savings Account", "Primary Account", "50");
+        transferPage.transferBetweenAccounts("Savings", "Primary", "200");
 
         userFrontPage.waitForHomePage();
+
+        double newPrimaryAccountBalance = userFrontPage.getPrimaryAccountBalanceValue();
+        double newSavingsAccountBalance = userFrontPage.getSavingsAccountBalanceValue();
+
+        Assert.assertEquals(primaryAccountBalance,newPrimaryAccountBalance-200,"主账户转入成功");
+        Assert.assertEquals(savingsAccountBalance,newSavingsAccountBalance+200,"储蓄账户转出成功");
         
-        String successMessage = userFrontPage.getSuccessMessage();
-        Assert.assertTrue(successMessage.contains("成功"), "应显示转账成功提示");
         extentTest.pass("储蓄账户转主账户成功");
     }
 
@@ -106,9 +118,11 @@ public class TransferTest extends BaseTest {
 
         TransferPage transferPage = new TransferPage(driver);
         // 转账金额为0
-        transferPage.transferBetweenAccounts("Primary Account", "Savings Account", "0");
+        transferPage.transferBetweenAccounts("Primary", "Savings", "0");
 
-        String errorMessage = transferPage.getErrorMessage();
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
         Assert.assertTrue(errorMessage.contains("大于0"), "应显示转账金额必须大于0错误");
         extentTest.pass("转账金额为0时显示正确错误提示");
     }
@@ -134,12 +148,14 @@ public class TransferTest extends BaseTest {
 
         TransferPage transferPage = new TransferPage(driver);
         // 转账金额为负数
-        transferPage.selectFromAccount("Primary Account");
-        transferPage.selectToAccount("Savings Account");
+        transferPage.selectFromAccount("Primary");
+        transferPage.selectToAccount("Savings");
         transferPage.enterAmount("-100");
         transferPage.clickTransferButton();
 
-        String errorMessage = transferPage.getErrorMessage();
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
         Assert.assertTrue(errorMessage.contains("大于0"), "应显示转账金额必须大于0错误");
         extentTest.pass("转账金额为负数时显示正确错误提示");
     }
@@ -164,13 +180,15 @@ public class TransferTest extends BaseTest {
         userFrontPage.navigateToTransferBetweenAccounts();
 
         TransferPage transferPage = new TransferPage(driver);
-        transferPage.selectFromAccount("Primary Account");
-        transferPage.selectToAccount("Savings Account");
+        transferPage.selectFromAccount("Primary");
+        transferPage.selectToAccount("Savings");
         transferPage.enterAmount("");
         transferPage.clickTransferButton();
 
-        String errorMessage = transferPage.getErrorMessage();
-        Assert.assertTrue(errorMessage.contains("输入") || errorMessage.contains("请输入"), "应显示请输入转账金额错误");
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
+        Assert.assertTrue(errorMessage.contains("empty"), "应显示请输入转账金额错误");
         extentTest.pass("转账金额为空时显示正确错误提示");
     }
 
@@ -196,11 +214,19 @@ public class TransferTest extends BaseTest {
 
         TransferPage transferPage = new TransferPage(driver);
         // 同一账户之间转账
-        transferPage.transferBetweenAccounts("Primary Account", "Primary Account", "100");
+        transferPage.selectFromAccount("Primary");
+        String fromAccount = transferPage.getFromAccount();
+        String toAccount = transferPage.getToAccount();
+        Assert.assertEquals(fromAccount,"Primary");
+        Assert.assertEquals(toAccount,"Savings");
 
-        String errorMessage = transferPage.getErrorMessage();
-        Assert.assertTrue(errorMessage.contains("无效") || errorMessage.contains("相同"), "应显示无效的转账操作错误");
-        extentTest.pass("同一账户转账显示正确错误提示");
+        transferPage.selectToAccount("Primary");
+        fromAccount = transferPage.getFromAccount();
+        toAccount = transferPage.getToAccount();
+        Assert.assertEquals(fromAccount,"Savings");
+        Assert.assertEquals(toAccount,"Primary");
+
+        extentTest.pass("不允许同一账户转账");
     }
 
     /**
@@ -224,9 +250,11 @@ public class TransferTest extends BaseTest {
 
         TransferPage transferPage = new TransferPage(driver);
         // 转账金额远大于账户余额
-        transferPage.transferBetweenAccounts("Primary Account", "Savings Account", "999999");
+        transferPage.transferBetweenAccounts("Primary", "Savings", "999999");
 
-        String errorMessage = transferPage.getErrorMessage();
+        userFrontPage.waitForHomePage();
+
+        String errorMessage = userFrontPage.getErrorMessage();
         Assert.assertTrue(errorMessage.contains("余额不足"), "应显示余额不足错误");
         extentTest.pass("余额不足转账显示正确错误提示");
     }

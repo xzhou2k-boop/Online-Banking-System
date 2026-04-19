@@ -21,14 +21,20 @@ public class TransferPage {
     /**
      * 转出账户下拉框
      */
-    @FindBy(xpath = "//select[@id='fromAccount']")
+    @FindBy(xpath = "//select[@id='transferFrom']")
     private WebElement fromAccountSelect;
 
     /**
      * 转入账户下拉框
      */
-    @FindBy(xpath = "//select[@id='toAccount']")
+    @FindBy(xpath = "//select[@id='transferTo']")
     private WebElement toAccountSelect;
+
+    /**
+     * 收款人下拉框(向他人转账)
+     */
+    @FindBy(xpath = "//select[@id='recipientName']")
+    private WebElement recipientNameSelect;
 
     /**
      * 转账金额输入框
@@ -71,7 +77,16 @@ public class TransferPage {
     public void selectFromAccount(String accountType) {
         wait.until(ExpectedConditions.visibilityOf(fromAccountSelect));
         Select select = new Select(fromAccountSelect);
-        select.selectByValue(accountType);
+        select.selectByVisibleText(accountType);
+    }
+
+    /**
+     * 获取当前选中的转出账户类型
+     * @return
+     */
+    public String getFromAccount(){
+        Select select = new Select(fromAccountSelect);
+        return select.getFirstSelectedOption().getText();
     }
 
     /**
@@ -80,7 +95,16 @@ public class TransferPage {
      */
     public void selectToAccount(String accountType) {
         Select select = new Select(toAccountSelect);
-        select.selectByValue(accountType);
+        select.selectByVisibleText(accountType);
+    }
+
+    /**
+     * 获取当前选中的转入账户类型
+     * @return
+     */
+    public String getToAccount(){
+        Select select = new Select(toAccountSelect);
+        return select.getFirstSelectedOption().getText();
     }
 
     /**
@@ -88,7 +112,7 @@ public class TransferPage {
      * @param recipientName 收款人姓名
      */
     public void selectToRecipient(String recipientName) {
-        Select select = new Select(toAccountSelect);
+        Select select = new Select(recipientNameSelect);
         select.selectByVisibleText(recipientName);
     }
 
