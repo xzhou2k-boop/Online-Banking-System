@@ -270,7 +270,7 @@ public class AccountManagementTest extends BaseTest {
 
         userFrontPage.waitForHomePage();
         String errorMessage = userFrontPage.getErrorMessage();
-        Assert.assertTrue(errorMessage.contains("empty") , "应显示请输入存款金额错误");
+        Assert.assertTrue(errorMessage.contains("请输入存款金额") , "应显示请输入存款金额错误");
         extentTest.pass("存款金额为空时显示正确错误提示");
     }
 
@@ -439,7 +439,7 @@ public class AccountManagementTest extends BaseTest {
         userFrontPage.waitForHomePage();
 
         String errorMessage = userFrontPage.getErrorMessage();
-        Assert.assertTrue(errorMessage.contains("empty"), "应显示请输入取款金额错误");
+        Assert.assertTrue(errorMessage.contains("请输入取款金额"), "应显示请输入取款金额错误");
         extentTest.pass("取款金额为空时显示正确错误提示");
     }
 

@@ -49,6 +49,9 @@ public class TransferController {
             @ModelAttribute("transferTo") String transferTo,
             @ModelAttribute("amount") String amount,
             Principal principal) throws Exception {
+        if(transferFrom.isEmpty()||transferTo.isEmpty()) {
+            throw new IllegalArgumentException("请选择转出/转入账户类型");
+        }
         if(amount.isEmpty()){
             throw new IllegalArgumentException("请输入转账金额");
         }
@@ -127,9 +130,15 @@ public class TransferController {
 
     @RequestMapping(value = "/toSomeoneElse", method = RequestMethod.POST)
     public String toSomeoneElsePost(@ModelAttribute("recipientName") String recipientName,
-            @ModelAttribute("accountType") String accountType, @ModelAttribute("amount") String amount,
+            @ModelAttribute("accountType") String accountType,
+                                    @ModelAttribute("amount") String amount,
             Principal principal) {
-
+        if(recipientName.isEmpty()){
+            throw new IllegalArgumentException("请选择收款人");
+        }
+        if(accountType.isEmpty()){
+            throw new IllegalArgumentException("请选择转出账号类型");
+        }
         if(amount.isEmpty()){
             throw new IllegalArgumentException("请输入转账金额");
         }
