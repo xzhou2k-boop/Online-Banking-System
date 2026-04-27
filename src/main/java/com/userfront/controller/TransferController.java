@@ -132,7 +132,7 @@ public class TransferController {
     public String toSomeoneElsePost(@ModelAttribute("recipientName") String recipientName,
             @ModelAttribute("accountType") String accountType,
                                     @ModelAttribute("amount") String amount,
-            Principal principal) {
+            Principal principal) throws Exception{
         if(recipientName.isEmpty()){
             throw new IllegalArgumentException("请选择收款人");
         }
@@ -151,7 +151,7 @@ public class TransferController {
 
         Recipient recipient = transactionService.findRecipientByName(recipientName, principal);
         transactionService.toSomeoneElseTransfer(recipient, accountType, amount, user.getPrimaryAccount(),
-                user.getSavingsAccount());
+                user.getSavingsAccount(),user.getUsername());
 
         return "redirect:/userFront";
     }

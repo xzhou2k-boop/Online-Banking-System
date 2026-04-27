@@ -149,7 +149,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public void toSomeoneElseTransfer(Recipient recipient, String accountType, String amount,
-            PrimaryAccount primaryAccount, SavingsAccount savingsAccount) {
+            PrimaryAccount primaryAccount, SavingsAccount savingsAccount,String username) throws Exception {
         BigDecimal transferAmount = new BigDecimal(amount);
 
         // 通过收款人账户信息查找对应的用户
@@ -179,7 +179,7 @@ public class TransactionServiceImpl implements TransactionService {
             recipientPrimaryAccount.setAccountBalance(recipientPrimaryAccount.getAccountBalance().add(transferAmount));
             primaryAccountDao.save(recipientPrimaryAccount);
 
-            PrimaryTransaction recipientTransaction = new PrimaryTransaction(date, "收到来自" + recipient.getName() + "的转账",
+            PrimaryTransaction recipientTransaction = new PrimaryTransaction(date, "收到来自" + username + "的转账",
                     "Transfer", "Finished", Double.parseDouble(amount), recipientPrimaryAccount.getAccountBalance(),
                     recipientPrimaryAccount);
             primaryTransactionDao.save(recipientTransaction);
@@ -200,7 +200,7 @@ public class TransactionServiceImpl implements TransactionService {
             recipientSavingsAccount.setAccountBalance(recipientSavingsAccount.getAccountBalance().add(transferAmount));
             savingsAccountDao.save(recipientSavingsAccount);
 
-            SavingsTransaction recipientTransaction = new SavingsTransaction(date, "收到来自" + recipient.getName() + "的转账",
+            SavingsTransaction recipientTransaction = new SavingsTransaction(date, "收到来自" + username + "的转账",
                     "Transfer", "Finished", Double.parseDouble(amount), recipientSavingsAccount.getAccountBalance(),
                     recipientSavingsAccount);
             savingsTransactionDao.save(recipientTransaction);

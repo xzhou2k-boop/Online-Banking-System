@@ -74,8 +74,13 @@
 <div th:replace="common/header :: body-bottom-scripts"/>
 <script>
     $(document).ready(function() {
-        $('#example').DataTable();
-    } );
+        $('#example').DataTable({
+            "order": [0, 'desc'],  // 初始按日期降序
+            "columnDefs": [
+                { "type": "date", "targets": 0 }  // 指定第一列为日期类型
+            ]
+        });
+    });
 </script>
 </body>
 </html>

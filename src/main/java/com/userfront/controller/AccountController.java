@@ -1,6 +1,7 @@
 package com.userfront.controller;
 
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,6 @@ public class AccountController {
 	@RequestMapping("/primaryAccount")
 	public String primaryAccount(Model model, Principal principal) {
 		List<PrimaryTransaction> primaryTransactionList = transactionService.findPrimaryTransactionList(principal.getName());
-		
 		User user = userService.findByUsername(principal.getName());
         PrimaryAccount primaryAccount = user.getPrimaryAccount();
 

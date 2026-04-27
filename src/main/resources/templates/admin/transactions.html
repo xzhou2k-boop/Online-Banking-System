@@ -107,10 +107,16 @@
 <script>
 $(document).ready(function() {
     $('#primaryTransactionTable').DataTable({
-        "order": [[0, "desc"]]
+        "order": [0, 'desc'],  // 初始按日期降序
+        "columnDefs": [
+            { "type": "date", "targets": 0 }  // 指定第一列为日期类型
+        ]
     });
     $('#savingsTransactionTable').DataTable({
-        "order": [[0, "desc"]]
+        "order": [0, 'desc'],  // 初始按日期降序
+        "columnDefs": [
+            { "type": "date", "targets": 0 }  // 指定第一列为日期类型
+        ]
     });
 });
 </script>
