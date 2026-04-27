@@ -1,8 +1,12 @@
 package com.userfront.resource;
 
 import java.util.List;
+import java.util.Set;
 
+import com.userfront.domain.security.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +53,13 @@ public class UserResource {
 
     @RequestMapping("/user/{username}/disable")
     public void disableUser(@PathVariable("username") String username) {
+        User user = userService.findByUsername(username);
+        Set<UserRole> userRoles = user.getUserRoles();
+        for(UserRole role : userRoles) {
+            if(role.getRole().getName().equals("ROLE_ADMIN")) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot disable admin account");
+            }
+        }
         userService.disableUser(username);
     }
 }
