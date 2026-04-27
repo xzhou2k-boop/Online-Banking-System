@@ -38,7 +38,7 @@
     <!-- /.row -->
 
     <div class="table-responsive">
-        <table class="table table-bordered table-hover table-striped">
+        <table id=“example” class="table table-bordered table-hover table-striped">
             <thead>
             <tr>
                 <th>交易日期</th>
@@ -68,6 +68,11 @@
 
 
 <div th:replace="common/header :: body-bottom-scripts"/>
-
+<script>
+    $(document).ready(function() {
+        $('#example').DataTable({
+            "order": [0, "desc"]
+        });
+    } );
 </body>
 </html>

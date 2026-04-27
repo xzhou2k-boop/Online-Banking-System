@@ -21,8 +21,10 @@ public interface TransactionService {
     void savePrimaryWithdrawTransaction(PrimaryTransaction primaryTransaction);
     void saveSavingsWithdrawTransaction(SavingsTransaction savingsTransaction);
     
-    void betweenAccountsTransfer(String transferFrom, String transferTo, String amount, PrimaryAccount primaryAccount, SavingsAccount savingsAccount) throws Exception;
-    
+    void betweenAccountsTransfer(String transferFrom, String transferTo, String amount, Principal principal) throws Exception;
+
+    void toSomeoneElseTransfer(Recipient recipient, String accountType, String amount, Principal principal) throws Exception;
+
     List<Recipient> findRecipientList(Principal principal);
 
     Recipient saveRecipient(Recipient recipient);
@@ -31,8 +33,7 @@ public interface TransactionService {
 
     void deleteRecipientByName(String recipientName, Principal principal);
     
-    void toSomeoneElseTransfer(Recipient recipient, String accountType, String amount, PrimaryAccount primaryAccount, SavingsAccount savingsAccount);
-    
+
     List<PrimaryTransaction> findAllPrimaryTransactions();
     
     List<SavingsTransaction> findAllSavingsTransactions();

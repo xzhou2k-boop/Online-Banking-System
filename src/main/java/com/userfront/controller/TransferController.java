@@ -60,10 +60,8 @@ public class TransferController {
         if (transferAmount <= 0) {
             throw new IllegalArgumentException("转账金额必须大于0");
         }
-        User user = userService.findByUsername(principal.getName());
-        PrimaryAccount primaryAccount = user.getPrimaryAccount();
-        SavingsAccount savingsAccount = user.getSavingsAccount();
-        transactionService.betweenAccountsTransfer(transferFrom, transferTo, amount, primaryAccount, savingsAccount);
+
+        transactionService.betweenAccountsTransfer(transferFrom, transferTo, amount, principal);
 
         return "redirect:/userFront";
     }
@@ -132,7 +130,7 @@ public class TransferController {
     public String toSomeoneElsePost(@ModelAttribute("recipientName") String recipientName,
             @ModelAttribute("accountType") String accountType,
                                     @ModelAttribute("amount") String amount,
-            Principal principal) {
+            Principal principal) throws Exception{
         if(recipientName.isEmpty()){
             throw new IllegalArgumentException("请选择收款人");
         }
@@ -147,11 +145,9 @@ public class TransferController {
         if (transferAmount <= 0) {
             throw new IllegalArgumentException("转账金额必须大于0");
         }
-        User user = userService.findByUsername(principal.getName());
 
         Recipient recipient = transactionService.findRecipientByName(recipientName, principal);
-        transactionService.toSomeoneElseTransfer(recipient, accountType, amount, user.getPrimaryAccount(),
-                user.getSavingsAccount());
+        transactionService.toSomeoneElseTransfer(recipient, accountType, amount, principal);
 
         return "redirect:/userFront";
     }
