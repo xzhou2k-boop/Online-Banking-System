@@ -76,8 +76,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public void betweenAccountsTransfer(String transferFrom, String transferTo, String amount,
-            PrimaryAccount primaryAccount, SavingsAccount savingsAccount) throws Exception {
+            Principal principal) throws Exception {
         BigDecimal transferAmount = new BigDecimal(amount);
+
+        User user = userService.findByUsername(principal.getName());
+        PrimaryAccount primaryAccount = user.getPrimaryAccount();
+        SavingsAccount savingsAccount = user.getSavingsAccount();
 
         if (transferFrom.equalsIgnoreCase("Primary") && transferTo.equalsIgnoreCase("Savings")) {
             if (primaryAccount.getAccountBalance().compareTo(transferAmount) < 0) {
@@ -149,7 +153,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public void toSomeoneElseTransfer(Recipient recipient, String accountType, String amount,
-            PrimaryAccount primaryAccount, SavingsAccount savingsAccount,String username) throws Exception {
+            Principal principal) throws Exception {
         BigDecimal transferAmount = new BigDecimal(amount);
 
         // 通过收款人账户信息查找对应的用户
@@ -161,6 +165,10 @@ public class TransactionServiceImpl implements TransactionService {
 
         PrimaryAccount recipientPrimaryAccount = recipientUser.getPrimaryAccount();
         SavingsAccount recipientSavingsAccount = recipientUser.getSavingsAccount();
+
+        User transferUser = userService.findByUsername(principal.getName());
+        PrimaryAccount primaryAccount = transferUser.getPrimaryAccount();
+        SavingsAccount savingsAccount = transferUser.getSavingsAccount();
 
         if (accountType.equalsIgnoreCase("Primary")) {
             if (primaryAccount.getAccountBalance().compareTo(transferAmount) < 0) {
@@ -179,7 +187,7 @@ public class TransactionServiceImpl implements TransactionService {
             recipientPrimaryAccount.setAccountBalance(recipientPrimaryAccount.getAccountBalance().add(transferAmount));
             primaryAccountDao.save(recipientPrimaryAccount);
 
-            PrimaryTransaction recipientTransaction = new PrimaryTransaction(date, "收到来自" + username + "的转账",
+            PrimaryTransaction recipientTransaction = new PrimaryTransaction(date, "收到来自" + transferUser.getFirstName() + transferUser.getLastName() + "的转账",
                     "Transfer", "Finished", Double.parseDouble(amount), recipientPrimaryAccount.getAccountBalance(),
                     recipientPrimaryAccount);
             primaryTransactionDao.save(recipientTransaction);
@@ -200,7 +208,7 @@ public class TransactionServiceImpl implements TransactionService {
             recipientSavingsAccount.setAccountBalance(recipientSavingsAccount.getAccountBalance().add(transferAmount));
             savingsAccountDao.save(recipientSavingsAccount);
 
-            SavingsTransaction recipientTransaction = new SavingsTransaction(date, "收到来自" + username + "的转账",
+            SavingsTransaction recipientTransaction = new SavingsTransaction(date, "收到来自" + transferUser.getFirstName() + transferUser.getLastName() + "的转账",
                     "Transfer", "Finished", Double.parseDouble(amount), recipientSavingsAccount.getAccountBalance(),
                     recipientSavingsAccount);
             savingsTransactionDao.save(recipientTransaction);

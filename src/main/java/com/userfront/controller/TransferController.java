@@ -60,10 +60,7 @@ public class TransferController {
         if (transferAmount <= 0) {
             throw new IllegalArgumentException("转账金额必须大于0");
         }
-        User user = userService.findByUsername(principal.getName());
-        PrimaryAccount primaryAccount = user.getPrimaryAccount();
-        SavingsAccount savingsAccount = user.getSavingsAccount();
-        transactionService.betweenAccountsTransfer(transferFrom, transferTo, amount, primaryAccount, savingsAccount);
+        transactionService.betweenAccountsTransfer(transferFrom, transferTo, amount, principal);
 
         return "redirect:/userFront";
     }
@@ -147,11 +144,9 @@ public class TransferController {
         if (transferAmount <= 0) {
             throw new IllegalArgumentException("转账金额必须大于0");
         }
-        User user = userService.findByUsername(principal.getName());
 
         Recipient recipient = transactionService.findRecipientByName(recipientName, principal);
-        transactionService.toSomeoneElseTransfer(recipient, accountType, amount, user.getPrimaryAccount(),
-                user.getSavingsAccount(),user.getUsername());
+        transactionService.toSomeoneElseTransfer(recipient, accountType, amount,principal);
 
         return "redirect:/userFront";
     }
