@@ -71,6 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         response.setContentType("application/json;charset=UTF-8");
 
                         Map<String, Object> result = new HashMap<>();
+                        result.put("code", 403);
                         result.put("message", "权限不足，无法访问该资源");
                         result.put("path", request.getRequestURI());
 
@@ -81,6 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         response.setContentType("application/json;charset=UTF-8");
 
                         Map<String, Object> result = new HashMap<>();
+                        result.put("code", 401);
                         result.put("message", "未认证，请先登录");
                         result.put("path", request.getRequestURI());
 
