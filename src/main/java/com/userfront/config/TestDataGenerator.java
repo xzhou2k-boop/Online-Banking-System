@@ -1,9 +1,11 @@
 package com.userfront.config;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.userfront.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -15,10 +17,6 @@ import com.userfront.dao.RecipientDao;
 import com.userfront.dao.RoleDao;
 import com.userfront.dao.SavingsAccountDao;
 import com.userfront.dao.UserDao;
-import com.userfront.domain.PrimaryAccount;
-import com.userfront.domain.Recipient;
-import com.userfront.domain.SavingsAccount;
-import com.userfront.domain.User;
 import com.userfront.domain.security.Role;
 import com.userfront.domain.security.UserRole;
 import com.userfront.service.AccountService;
@@ -92,6 +90,7 @@ public class TestDataGenerator implements CommandLineRunner {
             s1.setAccountBalance(INITIAL_BALANCE);
             primaryAccountDao.save(p1);
             savingsAccountDao.save(s1);
+
             LOG.info("user1\'s main and savings accounts have been credited with 5,000 yuan each");
         }
 

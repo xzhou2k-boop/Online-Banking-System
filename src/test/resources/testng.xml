@@ -43,4 +43,53 @@
         </classes>
     </test>
 
+    <!-- API Tests -->
+    <test name="REST API - User Management Tests" preserve-order="true">
+        <classes>
+            <class name="com.userfront.api.UserApiTest"/>
+        </classes>
+    </test>
+
+    <test name="REST API - Appointment Tests" preserve-order="true">
+        <classes>
+            <class name="com.userfront.api.AppointmentApiTest"/>
+        </classes>
+    </test>
+
+    <test name="Authentication and Authorization Tests" preserve-order="true">
+        <classes>
+            <class name="com.userfront.api.AuthApiTest"/>
+        </classes>
+    </test>
+
+    <test name="Public Endpoint Tests" preserve-order="true">
+        <classes>
+            <class name="com.userfront.api.PublicEndpointTest"/>
+        </classes>
+    </test>
+
+    <test name="Authenticated Endpoint Tests" preserve-order="true">
+        <classes>
+            <class name="com.userfront.api.AuthenticatedEndpointTest"/>
+        </classes>
+    </test>
+
+    <test name="Admin Endpoint Tests" preserve-order="true">
+        <classes>
+            <class name="com.userfront.api.AdminEndpointTest"/>
+        </classes>
+    </test>
+
+    <test name="Parameter Validation Tests" preserve-order="true">
+        <classes>
+            <class name="com.userfront.api.ParameterValidationTest"/>
+        </classes>
+    </test>
+
+    <test name="Response Format Tests" preserve-order="true">
+        <classes>
+            <class name="com.userfront.api.ResponseFormatTest"/>
+        </classes>
+    </test>
+
 </suite>
