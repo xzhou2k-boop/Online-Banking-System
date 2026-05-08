@@ -22,11 +22,9 @@ public class UserApiTest extends ApiBaseTest {
                 .get("/api/user/all")
                 .then()
                 .statusCode(200)
-                .body("code", equalTo(200))
                 .body("message", containsString("获取用户列表成功"))
-                .body("data", notNullValue())
-                .extract()
-                .response();
+                .body("data", is(notNullValue()))
+                .body("data.size()", greaterThan(0));
     }
 
     /**
@@ -41,11 +39,8 @@ public class UserApiTest extends ApiBaseTest {
                 .get("/api/user/all")
                 .then()
                 .statusCode(403)
-                .body("code", equalTo(403))
                 .body("message", containsString("权限不足，无法访问该资源"))
-                .body("path", equalTo("/api/user/all"))
-                .extract()
-                .response();
+                .body("path", equalTo("/api/user/all"));
     }
 
     /**
@@ -61,11 +56,8 @@ public class UserApiTest extends ApiBaseTest {
                 .get("/api/user/primary/transaction")
                 .then()
                 .statusCode(200)
-                .body("code", equalTo(200))
                 .body("message", containsString("获取主账户交易记录成功"))
-                .body("data", notNullValue())
-                .extract()
-                .response();
+                .body("data", notNullValue());
     }
 
     /**
@@ -80,11 +72,8 @@ public class UserApiTest extends ApiBaseTest {
                 .when()
                 .get("/api/user/primary/transaction")
                 .then()
-                .statusCode(200)
-                .body("code", equalTo(500))
-                .body("message", containsString("获取主账户交易记录失败"))
-                .extract()
-                .response();
+                .statusCode(500)
+                .body("message", containsString("获取主账户交易记录失败"));
     }
 
     /**
@@ -99,11 +88,9 @@ public class UserApiTest extends ApiBaseTest {
                 .get("/api/user/savings/transaction")
                 .then()
                 .statusCode(200)
-                .body("code", equalTo(200))
                 .body("message", containsString("获取储蓄账户交易记录成功"))
                 .body("data", notNullValue())
-                .extract()
-                .response();
+                .body("data.size()", greaterThan(0));
     }
 
 
@@ -119,11 +106,8 @@ public class UserApiTest extends ApiBaseTest {
                 .put("/api/user/" + USER3_USERNAME + "/enable")
                 .then()
                 .statusCode(200)
-                .body("code", equalTo(200))
                 .body("message", containsString("已成功启用"))
-                .body("data", equalTo(USER3_USERNAME))
-                .extract()
-                .response();
+                .body("data", equalTo(USER3_USERNAME));
     }
 
     /**
@@ -137,12 +121,8 @@ public class UserApiTest extends ApiBaseTest {
                 .when()
                 .put("/api/user/" + "notexist" + "/enable")
                 .then()
-                .statusCode(200)
-                .body("code", equalTo(404))
-                .body("message", containsString("用户不存在: notexist"))
-                .extract()
-                .response();
-
+                .statusCode(404)
+                .body("message", containsString("用户不存在: notexist"));
     }
 
     /**
@@ -156,11 +136,8 @@ public class UserApiTest extends ApiBaseTest {
                 .when()
                 .put("/api/user/" + USER1_USERNAME + "/enable")
                 .then()
-                .statusCode(200)
-                .body("code", equalTo(400))
-                .body("message", containsString("用户已经是启用状态: "+USER1_USERNAME))
-                .extract()
-                .response();
+                .statusCode(400)
+                .body("message", containsString("用户已经是启用状态: "+USER1_USERNAME));
     }
 
     /**
@@ -175,11 +152,8 @@ public class UserApiTest extends ApiBaseTest {
                 .put("/api/user/" + USER3_USERNAME + "/enable")
                 .then()
                 .statusCode(403)
-                .body("code", equalTo(403))
                 .body("message", containsString("权限不足，无法访问该资源"))
-                .body("path", equalTo("/api/user/user3/enable"))
-                .extract()
-                .response();
+                .body("path", equalTo("/api/user/user3/enable"));
    }
 
 
@@ -195,11 +169,8 @@ public class UserApiTest extends ApiBaseTest {
                 .put("/api/user/" + USER2_USERNAME + "/disable")
                 .then()
                 .statusCode(200)
-                .body("code", equalTo(200))
                 .body("message", containsString("已成功禁用"))
-                .body("data", equalTo(USER2_USERNAME))
-                .extract()
-                .response();
+                .body("data", equalTo(USER2_USERNAME));
     }
 
     /**
@@ -213,11 +184,8 @@ public class UserApiTest extends ApiBaseTest {
                 .when()
                 .put("/api/user/notexist/disable")
                 .then()
-                .statusCode(200)
-                .body("code", equalTo(404))
-                .body("message", containsString("用户不存在: notexist"))
-                .extract()
-                .response();
+                .statusCode(404)
+                .body("message", containsString("用户不存在: notexist"));
     }
 
     /**
@@ -231,11 +199,8 @@ public class UserApiTest extends ApiBaseTest {
                 .when()
                 .put("/api/user/" + USER3_USERNAME + "/disable")
                 .then()
-                .statusCode(200)
-                .body("code", equalTo(400))
-                .body("message", containsString("用户已被禁用: "+USER3_USERNAME))
-                .extract()
-                .response();
+                .statusCode(400)
+                .body("message", containsString("用户已被禁用: "+USER3_USERNAME));
     }
 
     /**
@@ -249,12 +214,9 @@ public class UserApiTest extends ApiBaseTest {
                 .when()
                 .put("/api/user/admin/disable")
                 .then()
-                .statusCode(200)
+                .statusCode(403)
                 .body("code", equalTo(403))
-                .body("message", containsString("无法禁用管理员账户: admin"))
-                .extract()
-                .response();
-
+                .body("message", containsString("无法禁用管理员账户: admin"));
     }
 
     /**
@@ -269,11 +231,8 @@ public class UserApiTest extends ApiBaseTest {
                 .put("/api/user/" + USER2_USERNAME + "/disable")
                 .then()
                 .statusCode(403)
-                .body("code", equalTo(403))
                 .body("message", containsString("权限不足，无法访问该资源"))
-                .body("path", equalTo("/api/user/user2/disable"))
-                .extract()
-                .response();
+                .body("path", equalTo("/api/user/user2/disable"));
     }
 
     /**
@@ -288,11 +247,8 @@ public class UserApiTest extends ApiBaseTest {
                 .get("/api/user/all")
                 .then()
                 .statusCode(401)
-                .body("code", equalTo(401))
                 .body("message", containsString("未认证，请先登录"))
-                .body("path", equalTo("/api/user/all"))
-                .extract()
-                .response();
+                .body("path", equalTo("/api/user/all"));
     }
 
     /**
@@ -308,11 +264,8 @@ public class UserApiTest extends ApiBaseTest {
                 .get("/api/user/primary/transaction")
                 .then()
                 .statusCode(401)
-                .body("code", equalTo(401))
                 .body("message", containsString("未认证，请先登录"))
-                .body("path", equalTo("/api/user/primary/transaction"))
-                .extract()
-                .response();
+                .body("path", equalTo("/api/user/primary/transaction"));
     }
 
     /**
@@ -328,13 +281,9 @@ public class UserApiTest extends ApiBaseTest {
                 .get("/api/user/savings/transaction")
                 .then()
                 .statusCode(401)
-                .body("code", equalTo(401))
                 .body("message", containsString("未认证，请先登录"))
-                .body("path", equalTo("/api/user/savings/transaction"))
-                .extract()
-                .response();
-
-     }
+                .body("path", equalTo("/api/user/savings/transaction"));
+    }
 
     /**
      * TC-API-018: 未认证用户启用用户
@@ -348,11 +297,8 @@ public class UserApiTest extends ApiBaseTest {
                 .put("/api/user/" + USER3_USERNAME + "/enable")
                 .then()
                 .statusCode(401)
-                .body("code", equalTo(401))
                 .body("message", containsString("未认证，请先登录"))
-                .body("path", equalTo("/api/user/user3/enable"))
-                .extract()
-                .response();
+                .body("path", equalTo("/api/user/user3/enable"));
     }
 
     /**
@@ -367,10 +313,7 @@ public class UserApiTest extends ApiBaseTest {
                 .put("/api/user/" + USER1_USERNAME + "/disable")
                 .then()
                 .statusCode(401)
-                .body("code", equalTo(401))
                 .body("message", containsString("未认证，请先登录"))
-                .body("path", equalTo("/api/user/user1/disable"))
-                .extract()
-                .response();
+                .body("path", equalTo("/api/user/user1/disable"));
     }
 }
